@@ -6,7 +6,6 @@
 //  Middleware        → see src/middleware.ts for the inline pattern
 
 import { createBrowserClient, createServerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -18,6 +17,7 @@ export function createSupabaseBrowserClient() {
 
 // Server client — call inside Server Components and Route Handlers
 export async function createSupabaseServerClient() {
+  const { cookies } = await import('next/headers')
   const cookieStore = await cookies()
   return createServerClient(url, anonKey, {
     cookies: {
