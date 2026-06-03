@@ -1,0 +1,399 @@
+/* =============================================================================
+   tokens.css — RCCGCity Design Tokens
+   Single source of truth for all CSS custom properties.
+
+   Structure:
+     1. Primitive Colors  — raw palette values. NEVER reference in components.
+     2. Color Roles       — semantic tokens. ALWAYS use these in components.
+     3. Typography        — font, size, weight, leading, tracking tokens.
+     4. Layout            — breakpoint-aware structural tokens.
+     5. Dark Mode         — role overrides for .dark class + prefers-color-scheme.
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. PRIMITIVE COLORS
+   Raw color palette. These are the only place hex values appear.
+   Consumed exclusively by the Color Roles section below.
+   ============================================================================= */
+
+:root {
+
+  /* --- Blue (RCCG Primary Navy) ---
+     Anchor: --blue-800 = #003580 (PRD Primary)             */
+  --blue-50:  #eef3ff;
+  --blue-100: #d8e6ff;
+  --blue-200: #b0ccff;
+  --blue-300: #7aaaff;
+  --blue-400: #4d8af5;
+  --blue-500: #2a6bde;
+  --blue-600: #1452bf;
+  --blue-700: #0a3d9e;
+  --blue-800: #003580;
+  --blue-900: #002460;
+  --blue-950: #001540;
+
+  /* --- Red (Alert / Emergency / Danger) ---
+     Anchor: --red-700 = #cc0000 (PRD Accent/Alert)         */
+  --red-50:  #fff5f5;
+  --red-100: #ffe0e0;
+  --red-200: #ffbfbf;
+  --red-300: #ff9494;
+  --red-400: #ff5c5c;
+  --red-500: #ff2626;
+  --red-600: #e60000;
+  --red-700: #cc0000;
+  --red-800: #a30000;
+  --red-900: #7a0000;
+  --red-950: #520000;
+
+  /* --- Green (Success / Open) ---
+     Anchor: --green-700 = #2e7d32 (PRD Success)            */
+  --green-50:  #f2faf2;
+  --green-100: #d6edcf;
+  --green-200: #aedba7;
+  --green-300: #7ec47f;
+  --green-400: #55a85a;
+  --green-500: #3d9142;
+  --green-600: #357c39;
+  --green-700: #2e7d32;
+  --green-800: #236128;
+  --green-900: #184a1d;
+  --green-950: #0d3012;
+
+  /* --- Amber (Warning / Crowded) ---
+     Anchor: --amber-500 = #f59e0b (PRD Warning)            */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+  --amber-950: #451a03;
+
+  /* --- Neutral (Surfaces / Text / Borders) ---
+     Anchors: --neutral-50  = #f4f6f8 (PRD Neutral Surface)
+              --neutral-500 = #6b7280 (PRD Maintenance Gray)
+              --neutral-950 = #0a1628 (PRD Dark Base)        */
+  --neutral-50:  #f4f6f8;
+  --neutral-100: #e8ecf0;
+  --neutral-200: #d0d7e0;
+  --neutral-300: #b0bac8;
+  --neutral-400: #8c99aa;
+  --neutral-500: #6b7280;
+  --neutral-600: #505a6b;
+  --neutral-700: #3d4557;
+  --neutral-800: #2a3142;
+  --neutral-900: #1a2235;
+  --neutral-950: #0a1628;
+
+  /* --- Base --- */
+  --white: #ffffff;
+  --black: #000000;
+
+}
+
+
+/* =============================================================================
+   2. COLOR ROLES — Light Mode (default)
+   Semantic tokens mapped to primitives above.
+   These are the ONLY color values that may appear in component CSS.
+   ============================================================================= */
+
+:root {
+
+  /* ---- Backgrounds ---- */
+  --color-bg-base:     var(--neutral-50);    /* Page / app background           */
+  --color-bg-surface:  var(--white);         /* Cards, sheets, bottom drawers   */
+  --color-bg-elevated: var(--white);         /* Modals, dropdowns, tooltips     */
+  --color-bg-subtle:   var(--neutral-100);   /* Section fills, subtle dividers  */
+  --color-bg-inverse:  var(--neutral-950);   /* Inverted surfaces, dark chips   */
+  --color-bg-overlay:  rgba(10, 22, 40, 0.6); /* Modal / drawer backdrop        */
+
+  /* ---- Text ---- */
+  --color-text-primary:   var(--neutral-950); /* Body text, headings             */
+  --color-text-secondary: var(--neutral-600); /* Captions, metadata, subtext     */
+  --color-text-tertiary:  var(--neutral-400); /* Placeholder, hints              */
+  --color-text-disabled:  var(--neutral-300); /* Disabled field values           */
+  --color-text-inverse:   var(--white);       /* Text on dark/inverse surfaces   */
+  --color-text-on-brand:  var(--white);       /* Text on brand-colored fills     */
+
+  /* ---- Borders ---- */
+  --color-border-subtle:  var(--neutral-100); /* Very light dividers             */
+  --color-border-default: var(--neutral-200); /* Card borders, default inputs    */
+  --color-border-strong:  var(--neutral-400); /* Emphasized, active inputs       */
+  --color-border-focus:   var(--blue-800);    /* Keyboard focus ring             */
+
+  /* ---- Brand / Interactive ---- */
+  --color-brand:        var(--blue-800);    /* Primary buttons, active nav       */
+  --color-brand-hover:  var(--blue-900);    /* Hover on brand elements           */
+  --color-brand-active: var(--blue-950);    /* Pressed / active state            */
+  --color-brand-subtle: var(--blue-50);     /* Light brand-tinted backgrounds    */
+  --color-brand-text:   var(--blue-800);    /* Brand-colored text, inline links  */
+
+  /* ---- Success ---- */
+  --color-success:      var(--green-700);   /* Success icon / border color       */
+  --color-success-bg:   var(--green-50);    /* Success banner background         */
+  --color-success-text: var(--green-700);   /* Success message text              */
+
+  /* ---- Warning ---- */
+  --color-warning:      var(--amber-500);   /* Warning icon / border color       */
+  --color-warning-bg:   var(--amber-50);    /* Warning banner background         */
+  --color-warning-text: var(--amber-700);   /* Warning message text (AA-safe)    */
+
+  /* ---- Danger ---- */
+  --color-danger:       var(--red-700);     /* Error / destructive icon / border */
+  --color-danger-bg:    var(--red-50);      /* Error message background          */
+  --color-danger-text:  var(--red-700);     /* Error message text                */
+  --color-danger-hover: var(--red-800);     /* Hover on destructive actions      */
+
+  /* ---- Facility Status (RCCGCity-specific) ---- */
+  --color-status-open:               var(--green-700);  /* Dot / border          */
+  --color-status-open-bg:            var(--green-50);   /* Badge background      */
+  --color-status-open-text:          var(--green-700);  /* Badge label           */
+
+  --color-status-closed:             var(--red-700);    /* Dot / border          */
+  --color-status-closed-bg:          var(--red-50);     /* Badge background      */
+  --color-status-closed-text:        var(--red-700);    /* Badge label           */
+
+  --color-status-crowded:            var(--amber-500);  /* Dot / border          */
+  --color-status-crowded-bg:         var(--amber-50);   /* Badge background      */
+  --color-status-crowded-text:       var(--amber-700);  /* Badge label (AA-safe) */
+
+  --color-status-maintenance:        var(--neutral-500); /* Dot / border         */
+  --color-status-maintenance-bg:     var(--neutral-100); /* Badge background     */
+  --color-status-maintenance-text:   var(--neutral-600); /* Badge label          */
+
+  /* ---- Emergency (Help screen / security CTAs only) ---- */
+  --color-emergency:        var(--red-700);  /* Emergency button / icon          */
+  --color-emergency-bg:     var(--red-50);   /* Emergency section background     */
+  --color-emergency-text:   var(--red-700);  /* Emergency section text           */
+  --color-emergency-strong: var(--red-800);  /* Hover / active emergency state   */
+
+}
+
+
+/* =============================================================================
+   3. TYPOGRAPHY
+   ============================================================================= */
+
+:root {
+
+  /* ---- Font Families ---- */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+               'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code',
+               Consolas, 'Courier New', monospace;
+
+  /* ---- Font Sizes ---- */
+  --text-xs:   0.75rem;    /* 12px — timestamps, micro-labels             */
+  --text-sm:   0.875rem;   /* 14px — captions, form hints, secondary meta */
+  --text-base: 1rem;       /* 16px — body text, inputs, descriptions      */
+  --text-lg:   1.125rem;   /* 18px — lead text, facility names in lists   */
+  --text-xl:   1.25rem;    /* 20px — section headings, drawer titles      */
+  --text-2xl:  1.5rem;     /* 24px — screen titles, category headings     */
+  --text-3xl:  1.875rem;   /* 30px — large feature headings               */
+  --text-4xl:  2.25rem;    /* 36px — hero / banner headings               */
+  --text-5xl:  3rem;       /* 48px — display text (use sparingly)         */
+
+  /* ---- Font Weights ---- */
+  --font-weight-regular:  400; /* Body text, descriptions, input values   */
+  --font-weight-medium:   500; /* Labels, nav items, secondary headings   */
+  --font-weight-semibold: 600; /* Section titles, badges, button text     */
+  --font-weight-bold:     700; /* Primary headings, CTAs, drawer titles   */
+
+  /* ---- Line Heights ---- */
+  --leading-none:    1;      /* Single-line display, tight layout         */
+  --leading-tight:   1.25;   /* Headings, titles                          */
+  --leading-snug:    1.375;  /* Large body text, lead paragraphs          */
+  --leading-normal:  1.5;    /* Standard body text (default)              */
+  --leading-relaxed: 1.625;  /* Long descriptions, help content           */
+  --leading-loose:   2;      /* Instructional / spaced text               */
+
+  /* ---- Letter Spacing ---- */
+  --tracking-tighter: -0.05em;  /* Large display headings                 */
+  --tracking-tight:   -0.025em; /* h1–h2 headings                         */
+  --tracking-normal:   0em;     /* Default body text                      */
+  --tracking-wide:     0.025em; /* UI labels, form labels                 */
+  --tracking-wider:    0.05em;  /* Status badges, category chips          */
+  --tracking-widest:   0.1em;   /* ALL CAPS labels, overline text         */
+
+}
+
+
+/* =============================================================================
+   4. LAYOUT
+   ============================================================================= */
+
+:root {
+
+  --layout-max-width:        1280px;  /* Content container cap on desktop   */
+  --nav-height-mobile:         64px;  /* Bottom navigation bar              */
+  --nav-height-desktop:        60px;  /* Top header bar                     */
+  --drawer-max-height:         90vh;  /* Facility detail slide-up drawer    */
+  --content-padding-mobile:    16px;  /* Horizontal content padding mobile  */
+  --content-padding-desktop:   32px;  /* Horizontal content padding desktop */
+
+}
+
+
+/* =============================================================================
+   5. DARK MODE — Color Role Overrides
+   Two declarations for resilience:
+     a) .dark class  — toggled by JS reading localStorage (explicit preference)
+     b) @media query — system preference fallback (first-time visitors)
+   The .dark class takes precedence over the media query when both are present
+   because it is declared later in the cascade.
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+
+    /* ---- Backgrounds ---- */
+    --color-bg-base:     var(--neutral-950);
+    --color-bg-surface:  var(--neutral-900);
+    --color-bg-elevated: var(--neutral-800);
+    --color-bg-subtle:   var(--neutral-900);
+    --color-bg-inverse:  var(--white);
+    --color-bg-overlay:  rgba(0, 0, 0, 0.7);
+
+    /* ---- Text ---- */
+    --color-text-primary:   var(--neutral-50);
+    --color-text-secondary: var(--neutral-300);
+    --color-text-tertiary:  var(--neutral-500);
+    --color-text-disabled:  var(--neutral-600);
+    --color-text-inverse:   var(--neutral-950);
+    --color-text-on-brand:  var(--white);
+
+    /* ---- Borders ---- */
+    --color-border-subtle:  var(--neutral-800);
+    --color-border-default: var(--neutral-700);
+    --color-border-strong:  var(--neutral-500);
+    --color-border-focus:   var(--blue-400);
+
+    /* ---- Brand / Interactive ---- */
+    --color-brand:        var(--blue-400);
+    --color-brand-hover:  var(--blue-300);
+    --color-brand-active: var(--blue-200);
+    --color-brand-subtle: rgba(0, 53, 128, 0.2);
+    --color-brand-text:   var(--blue-300);
+
+    /* ---- Success ---- */
+    --color-success:      var(--green-400);
+    --color-success-bg:   rgba(46, 125, 50, 0.15);
+    --color-success-text: var(--green-400);
+
+    /* ---- Warning ---- */
+    --color-warning:      var(--amber-400);
+    --color-warning-bg:   rgba(245, 158, 11, 0.15);
+    --color-warning-text: var(--amber-300);
+
+    /* ---- Danger ---- */
+    --color-danger:       var(--red-400);
+    --color-danger-bg:    rgba(204, 0, 0, 0.15);
+    --color-danger-text:  var(--red-400);
+    --color-danger-hover: var(--red-300);
+
+    /* ---- Facility Status ---- */
+    --color-status-open:             var(--green-400);
+    --color-status-open-bg:          rgba(46, 125, 50, 0.15);
+    --color-status-open-text:        var(--green-400);
+
+    --color-status-closed:           var(--red-400);
+    --color-status-closed-bg:        rgba(204, 0, 0, 0.15);
+    --color-status-closed-text:      var(--red-400);
+
+    --color-status-crowded:          var(--amber-400);
+    --color-status-crowded-bg:       rgba(245, 158, 11, 0.15);
+    --color-status-crowded-text:     var(--amber-300);
+
+    --color-status-maintenance:      var(--neutral-400);
+    --color-status-maintenance-bg:   rgba(107, 114, 128, 0.2);
+    --color-status-maintenance-text: var(--neutral-400);
+
+    /* ---- Emergency ---- */
+    --color-emergency:        var(--red-400);
+    --color-emergency-bg:     rgba(204, 0, 0, 0.15);
+    --color-emergency-text:   var(--red-400);
+    --color-emergency-strong: var(--red-300);
+
+  }
+}
+
+/* JS-controlled dark mode — applied via document.documentElement.classList.add('dark')
+   Overrides the media query for users who have explicitly set their preference.        */
+.dark {
+
+  /* ---- Backgrounds ---- */
+  --color-bg-base:     var(--neutral-950);
+  --color-bg-surface:  var(--neutral-900);
+  --color-bg-elevated: var(--neutral-800);
+  --color-bg-subtle:   var(--neutral-900);
+  --color-bg-inverse:  var(--white);
+  --color-bg-overlay:  rgba(0, 0, 0, 0.7);
+
+  /* ---- Text ---- */
+  --color-text-primary:   var(--neutral-50);
+  --color-text-secondary: var(--neutral-300);
+  --color-text-tertiary:  var(--neutral-500);
+  --color-text-disabled:  var(--neutral-600);
+  --color-text-inverse:   var(--neutral-950);
+  --color-text-on-brand:  var(--white);
+
+  /* ---- Borders ---- */
+  --color-border-subtle:  var(--neutral-800);
+  --color-border-default: var(--neutral-700);
+  --color-border-strong:  var(--neutral-500);
+  --color-border-focus:   var(--blue-400);
+
+  /* ---- Brand / Interactive ---- */
+  --color-brand:        var(--blue-400);
+  --color-brand-hover:  var(--blue-300);
+  --color-brand-active: var(--blue-200);
+  --color-brand-subtle: rgba(0, 53, 128, 0.2);
+  --color-brand-text:   var(--blue-300);
+
+  /* ---- Success ---- */
+  --color-success:      var(--green-400);
+  --color-success-bg:   rgba(46, 125, 50, 0.15);
+  --color-success-text: var(--green-400);
+
+  /* ---- Warning ---- */
+  --color-warning:      var(--amber-400);
+  --color-warning-bg:   rgba(245, 158, 11, 0.15);
+  --color-warning-text: var(--amber-300);
+
+  /* ---- Danger ---- */
+  --color-danger:       var(--red-400);
+  --color-danger-bg:    rgba(204, 0, 0, 0.15);
+  --color-danger-text:  var(--red-400);
+  --color-danger-hover: var(--red-300);
+
+  /* ---- Facility Status ---- */
+  --color-status-open:             var(--green-400);
+  --color-status-open-bg:          rgba(46, 125, 50, 0.15);
+  --color-status-open-text:        var(--green-400);
+
+  --color-status-closed:           var(--red-400);
+  --color-status-closed-bg:        rgba(204, 0, 0, 0.15);
+  --color-status-closed-text:      var(--red-400);
+
+  --color-status-crowded:          var(--amber-400);
+  --color-status-crowded-bg:       rgba(245, 158, 11, 0.15);
+  --color-status-crowded-text:     var(--amber-300);
+
+  --color-status-maintenance:      var(--neutral-400);
+  --color-status-maintenance-bg:   rgba(107, 114, 128, 0.2);
+  --color-status-maintenance-text: var(--neutral-400);
+
+  /* ---- Emergency ---- */
+  --color-emergency:        var(--red-400);
+  --color-emergency-bg:     rgba(204, 0, 0, 0.15);
+  --color-emergency-text:   var(--red-400);
+  --color-emergency-strong: var(--red-300);
+
+}

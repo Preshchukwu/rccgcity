@@ -1,0 +1,25 @@
+{
+  "name": "RCCGCity — Redemption Camp Smart Companion",
+  "short_name": "RCCGCity",
+  "description": "Find anything. Navigate anywhere. Get help instantly. All within Redemption City.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#003580",
+  "orientation": "portrait-primary",
+  "categories": ["navigation", "travel", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
