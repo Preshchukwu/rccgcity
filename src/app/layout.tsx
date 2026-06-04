@@ -23,10 +23,10 @@ export const viewport: Viewport = {
 }
 
 // Blocking script — must run before body renders to prevent flash of wrong theme
+// Light mode is the app default; dark only if the user explicitly chose it
 const themeScript = `(function(){
   var s=localStorage.getItem('theme');
-  var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if(s==='dark'||(s===null&&d)){document.documentElement.classList.add('dark')}
+  if(s==='dark'){document.documentElement.classList.add('dark')}
 })()`
 
 export default function RootLayout({
