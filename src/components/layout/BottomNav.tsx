@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Map, Search, LifeBuoy, Globe } from 'lucide-react'
-import DarkModeToggle from './DarkModeToggle'
+import { Home, Map, Search, LifeBuoy } from 'lucide-react'
 
 const tabs = [
   { href: '/',       label: 'Home',   icon: Home    },
@@ -31,25 +30,6 @@ export default function BottomNav() {
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      {/* Left controls — dark mode + language */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 52, flexShrink: 0, gap: 4 }}>
-        <DarkModeToggle size="sm" />
-        <button
-          disabled
-          title="Language switcher — coming soon"
-          aria-label="Language switcher (coming soon)"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, borderRadius: 6,
-            background: 'transparent', border: 'none',
-            color: 'var(--color-text-secondary)', cursor: 'not-allowed',
-            padding: 0,
-          }}
-        >
-          <Globe size={15} />
-        </button>
-      </div>
-
       {tabs.map(({ href, label, icon: Icon }) => {
         const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
         return (
