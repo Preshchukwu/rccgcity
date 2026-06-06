@@ -77,6 +77,34 @@ Manual service worker at `public/sw.js` — `next-pwa` is incompatible with Next
 
 PWA icons at `public/icons/icon-192.png` and `public/icons/icon-512.png` are maskable-ready (logo centered with ~15% padding, solid background). `manifest.json` sets `"purpose": "any maskable"` on both entries.
 
+## Admin → Public Data Sync
+
+All admin write operations must call `revalidatePath` after the DB write so Next.js ISR cache is busted immediately. The home page uses `export const revalidate = 60` but admin changes must reflect at once — `revalidatePath` achieves this.
+
+| Resource | Paths to revalidate |
+|---|---|
+| Banners | `'/'` |
+| Facilities | `'/'`, `'/map'`, `'/search'` |
+| Reports | `'/'` |
+
+```ts
+import { revalidatePath } from 'next/cache'
+// after prisma write:
+revalidatePath('/')
+```
+
+**Admin-only GET variants** — some GET routes accept `?all=1` to bypass public filters (e.g. `GET /api/banners?all=1` returns all banners including inactive ones). These variants require admin auth. Always use `?all=1` when fetching from admin pages.
+
+## Banner Images
+
+`BannerCarousel` uses `banner.imageUrl` as a CSS `background-image` with a dark gradient overlay for text readability. When no image is set, it falls back to the RCCG navy branded gradient. Always upload via the admin Banners page → Cloudinary → URL stored in DB.
+
+```
+background: banner.imageUrl
+  ? `linear-gradient(...dark overlay...), url(${banner.imageUrl})`
+  : `linear-gradient(135deg, var(--color-brand) 0%, #1452bf 100%)`
+```
+
 ## Google Maps
 
 Not yet integrated — deferred until RCCG provides official camp map data. `MapClient.tsx` renders a filterable facility list as the current fallback. Do not attempt to add a Maps API key or SDK until the data is available.
