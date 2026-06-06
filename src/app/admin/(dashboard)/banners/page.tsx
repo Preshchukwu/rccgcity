@@ -26,7 +26,7 @@ export default function BannersPage() {
 
   async function load() {
     setLoading(true)
-    const res = await fetch('/api/banners')
+    const res = await fetch('/api/banners?all=1')
     const data = await res.json()
     setBanners(data)
     setLoading(false)

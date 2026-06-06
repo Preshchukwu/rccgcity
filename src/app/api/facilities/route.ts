@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
@@ -47,5 +48,8 @@ export async function POST(request: NextRequest) {
   }
 
   const facility = await prisma.facility.create({ data: parsed.data })
+  revalidatePath('/')
+  revalidatePath('/map')
+  revalidatePath('/search')
   return NextResponse.json(facility, { status: 201 })
 }

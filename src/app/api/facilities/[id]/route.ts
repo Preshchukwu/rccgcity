@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
@@ -33,6 +34,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   const facility = await prisma.facility.update({ where: { id }, data: parsed.data })
+  revalidatePath('/')
+  revalidatePath('/map')
+  revalidatePath('/search')
   return NextResponse.json(facility)
 }
 
@@ -42,5 +46,8 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 
   const { id } = await params
   await prisma.facility.delete({ where: { id } })
+  revalidatePath('/')
+  revalidatePath('/map')
+  revalidatePath('/search')
   return new NextResponse(null, { status: 204 })
 }

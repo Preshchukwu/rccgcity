@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { checkRateLimit } from '@/lib/rate-limit'
@@ -65,5 +66,6 @@ export async function POST(request: NextRequest) {
     },
   })
 
+  revalidatePath('/')
   return NextResponse.json(report, { status: 201 })
 }

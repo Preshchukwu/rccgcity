@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
@@ -12,9 +13,16 @@ const CreateBannerSchema = z.object({
   displayOrder: z.number().int().default(0),
 })
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const all = new URL(request.url).searchParams.get('all') === '1'
+
+  if (all) {
+    const auth = await requireAdmin()
+    if (auth.error) return auth.error
+  }
+
   const banners = await prisma.bannerCard.findMany({
-    where: { isActive: true },
+    where: all ? {} : { isActive: true },
     orderBy: { displayOrder: 'asc' },
   })
   return NextResponse.json(banners)
@@ -31,5 +39,6 @@ export async function POST(request: NextRequest) {
   }
 
   const banner = await prisma.bannerCard.create({ data: parsed.data })
+  revalidatePath('/')
   return NextResponse.json(banner, { status: 201 })
 }
