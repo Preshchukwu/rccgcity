@@ -14,6 +14,19 @@ export const metadata: Metadata = {
   description: 'Find anything. Navigate anywhere. Get help instantly. All within Redemption City.',
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'RCCGCity' },
+  openGraph: {
+    title: 'RCCGCity — Redemption Camp Smart Companion',
+    description: 'Find anything. Navigate anywhere. Get help instantly. All within Redemption City.',
+    siteName: 'RCCGCity',
+    type: 'website',
+    images: [{ url: '/icons/icon-512.png', width: 512, height: 512, alt: 'RCCGCity' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'RCCGCity — Redemption Camp Smart Companion',
+    description: 'Find anything. Navigate anywhere. Get help instantly. All within Redemption City.',
+    images: ['/icons/icon-512.png'],
+  },
 }
 
 export const viewport: Viewport = {
