@@ -1,10 +1,16 @@
 import TopHeader from './TopHeader'
 import BottomNav from './BottomNav'
+import MobileTopBar from './MobileTopBar'
 
 export default function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {/* Desktop top header — hidden on mobile via CSS */}
+      {/* Mobile top bar — hidden on desktop */}
+      <div className="block lg:hidden">
+        <MobileTopBar />
+      </div>
+
+      {/* Desktop top header — hidden on mobile */}
       <div className="hidden lg:block">
         <TopHeader />
       </div>
@@ -17,12 +23,12 @@ export default function PageShell({ children }: { children: React.ReactNode }) {
           maxWidth: 'var(--layout-max-width)',
           margin: '0 auto',
         }}
-        className="lg:pb-0 lg:pt-[var(--nav-height-desktop)]"
+        className="pt-[var(--nav-height-mobile-top)] lg:pt-[var(--nav-height-desktop)] lg:pb-0"
       >
         {children}
       </main>
 
-      {/* Mobile bottom nav — hidden on desktop via CSS */}
+      {/* Mobile bottom nav — hidden on desktop */}
       <div className="block lg:hidden">
         <BottomNav />
       </div>

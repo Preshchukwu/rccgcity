@@ -62,12 +62,29 @@ Admin-only. No public registration. Create admin users manually in the Supabase 
 - All env vars listed in `.env.example`. Set them in Vercel project settings before deploying.
 - After deploy, add the Vercel URL to Supabase → Authentication → URL Configuration (Site URL + Redirect URLs).
 
+## Mobile Layout
+
+`PageShell` renders a **two-bar mobile layout**:
+- `MobileTopBar` — fixed top bar (56px, `--nav-height-mobile-top`). Left: time-aware greeting + "Calvary Greetings!". Right: dark mode toggle + language toggle (disabled). Mobile only (`block lg:hidden`).
+- `BottomNav` — fixed bottom bar (64px, `--nav-height-mobile`). Mobile only.
+- `main` gets `padding-top: var(--nav-height-mobile-top)` on mobile, `padding-top: var(--nav-height-desktop)` on desktop.
+
+Desktop keeps the existing `TopHeader` only — no `MobileTopBar`.
+
 ## PWA
 
 Manual service worker at `public/sw.js` — `next-pwa` is incompatible with Next.js 16 Turbopack. Do not attempt to add it.
 
+PWA icons at `public/icons/icon-192.png` and `public/icons/icon-512.png` are maskable-ready (logo centered with ~15% padding, solid background). `manifest.json` sets `"purpose": "any maskable"` on both entries.
+
+## Google Maps
+
+Not yet integrated — deferred until RCCG provides official camp map data. `MapClient.tsx` renders a filterable facility list as the current fallback. Do not attempt to add a Maps API key or SDK until the data is available.
+
 ## Pending Work
 
 - [ ] Migrate `@supabase/auth-helpers-nextjs` → `@supabase/ssr` (package deprecated)
-- [ ] Wire up Globe button language switcher (entry points exist in TopHeader + BottomNav)
+- [ ] Wire up Globe button language switcher (entry points exist in `MobileTopBar`, `TopHeader`)
 - [ ] Upstash Redis rate limiting (currently stubbed to `{ success: true }`)
+- [ ] Google Maps integration (backlog — pending RCCG map data)
+- [ ] Multilingual support via DeepSeek (backlog — after RCCG testing phase)

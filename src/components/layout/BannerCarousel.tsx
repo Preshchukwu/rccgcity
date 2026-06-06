@@ -10,14 +10,18 @@ export default function BannerCarousel({ banners }: { banners: BannerCard[] }) {
 
   function scrollTo(index: number) {
     setActive(index)
-    scrollRef.current?.children[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.offsetWidth * index
+    }
   }
 
   function startTimer() {
     timerRef.current = setInterval(() => {
       setActive(prev => {
         const next = (prev + 1) % banners.length
-        scrollRef.current?.children[next]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+        if (scrollRef.current) {
+          scrollRef.current.scrollLeft = scrollRef.current.offsetWidth * next
+        }
         return next
       })
     }, 4000)
@@ -38,6 +42,7 @@ export default function BannerCarousel({ banners }: { banners: BannerCard[] }) {
           display: 'flex',
           overflowX: 'auto',
           scrollSnapType: 'x mandatory',
+          scrollBehavior: 'smooth',
           scrollbarWidth: 'none',
           gap: 0,
           borderRadius: 16,

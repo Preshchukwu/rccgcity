@@ -233,6 +233,7 @@
 
   --layout-max-width:        1280px;  /* Content container cap on desktop   */
   --nav-height-mobile:         64px;  /* Bottom navigation bar              */
+  --nav-height-mobile-top:     56px;  /* Mobile top bar (greeting + toggles) */
   --nav-height-desktop:        60px;  /* Top header bar                     */
   --drawer-max-height:         90vh;  /* Facility detail slide-up drawer    */
   --content-padding-mobile:    16px;  /* Horizontal content padding mobile  */
