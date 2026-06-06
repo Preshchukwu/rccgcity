@@ -64,7 +64,11 @@ export default function BannerCarousel({ banners }: { banners: BannerCard[] }) {
               minWidth: '100%',
               scrollSnapAlign: 'start',
               minHeight: 'clamp(200px, 25vw, 260px)',
-              background: `linear-gradient(135deg, var(--color-brand) 0%, #1452bf 100%)`,
+              background: banner.imageUrl
+                ? `linear-gradient(to bottom, rgba(0,20,60,0.25) 0%, rgba(0,20,60,0.72) 100%), url(${banner.imageUrl})`
+                : `linear-gradient(135deg, var(--color-brand) 0%, #1452bf 100%)`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
               padding: '20px 20px 24px',
               textDecoration: 'none',
               cursor: banner.linkUrl ? 'pointer' : 'default',
