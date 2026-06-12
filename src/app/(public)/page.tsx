@@ -13,7 +13,7 @@ async function getHomeData() {
     prisma.bannerCard.findMany({ where: { isActive: true }, orderBy: { displayOrder: 'asc' } }),
     prisma.facility.findMany({ select: { category: true } }),
     prisma.report.findMany({
-      where: { isHidden: false },
+      where: { isHidden: false, type: 'comment' },
       orderBy: { createdAt: 'desc' },
       take: 5,
       include: { facility: { select: { name: true } } },

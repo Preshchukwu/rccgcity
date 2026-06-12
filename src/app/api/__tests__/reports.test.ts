@@ -85,6 +85,41 @@ describe('GET /api/reports', () => {
     expect(where.facilityId).toBe('fac-1')
   })
 
+  it('filters by type=comment when provided', async () => {
+    m(prisma.report.findMany).mockResolvedValue([])
+    await listReports(req('http://localhost/api/reports?type=comment'))
+    const where = m(prisma.report.findMany).mock.calls[0][0].where
+    expect(where.type).toBe('comment')
+  })
+
+  it('filters by type=issue when provided', async () => {
+    m(prisma.report.findMany).mockResolvedValue([])
+    await listReports(req('http://localhost/api/reports?type=issue'))
+    const where = m(prisma.report.findMany).mock.calls[0][0].where
+    expect(where.type).toBe('issue')
+  })
+
+  it('ignores invalid type values', async () => {
+    m(prisma.report.findMany).mockResolvedValue([])
+    await listReports(req('http://localhost/api/reports?type=invalid'))
+    const where = m(prisma.report.findMany).mock.calls[0][0].where
+    expect(where.type).toBeUndefined()
+  })
+
+  it('passes offset to skip', async () => {
+    m(prisma.report.findMany).mockResolvedValue([])
+    await listReports(req('http://localhost/api/reports?offset=20'))
+    const call = m(prisma.report.findMany).mock.calls[0][0]
+    expect(call.skip).toBe(20)
+  })
+
+  it('clamps negative offset to 0', async () => {
+    m(prisma.report.findMany).mockResolvedValue([])
+    await listReports(req('http://localhost/api/reports?offset=-5'))
+    const call = m(prisma.report.findMany).mock.calls[0][0]
+    expect(call.skip).toBe(0)
+  })
+
   it('returns 500 on db error', async () => {
     m(prisma.report.findMany).mockRejectedValue(new Error('DB error'))
     const res = await listReports(req('http://localhost/api/reports'))

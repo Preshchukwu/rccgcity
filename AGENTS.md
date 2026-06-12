@@ -20,6 +20,7 @@ src/app/
     search/
     help/
     guide/
+    community/       ← Community feed (client — filter chips, load more)
   admin/
     login/           ← unauthenticated login page
     (dashboard)/     ← session-guarded pages (AdminShell layout)
@@ -95,6 +96,8 @@ revalidatePath('/')
 
 **Admin-only GET variants** — some GET routes accept `?all=1` to bypass public filters (e.g. `GET /api/banners?all=1` returns all banners including inactive ones). These variants require admin auth. Always use `?all=1` when fetching from admin pages.
 
+**`GET /api/reports` filter params** — public endpoint accepts `type=comment|issue`, `facilityId=<id>`, `limit` (max 200), and `offset` for pagination. Invalid `type` values are silently ignored (no filter applied).
+
 ## Banner Images
 
 `BannerCarousel` uses `banner.imageUrl` as a CSS `background-image` with a dark gradient overlay for text readability. When no image is set, it falls back to the RCCG navy branded gradient. Always upload via the admin Banners page → Cloudinary → URL stored in DB.
@@ -116,8 +119,8 @@ Three-layer pyramid — all tests run without a real database.
 | Layer | Runner | Command | Count |
 |---|---|---|---|
 | Unit | Vitest | `npm run test:run` | 34 |
-| Integration | Vitest | `npm run test:run` | 54 |
-| E2E | Playwright | `npm run test:e2e` | 16 |
+| Integration | Vitest | `npm run test:run` | 59 |
+| E2E | Playwright | `npm run test:e2e` | 20 |
 
 **Unit tests** live in `src/lib/__tests__/` — pure functions only (`format`, `debounce`, `cloudinary-url`, `prisma-errors`).
 
@@ -129,7 +132,7 @@ vi.mock('@/lib/auth',   () => ({ requireAdmin: vi.fn() }))
 vi.mock('next/cache',   () => ({ revalidatePath: vi.fn() }))
 ```
 
-**E2E tests** live in `e2e/` and run against the live dev server (`reuseExistingServer: true`). Pages that need the DB (`/`, `/map`) are not covered — they require a seeded test database. Client-only pages (`/guide`, `/help`, `/search`, `/admin/login`) are fully covered via `page.route()` network mocking.
+**E2E tests** live in `e2e/` and run against the live dev server (`reuseExistingServer: true`). Pages that need the DB (`/`, `/map`) are not covered — they require a seeded test database. Client-only pages (`/guide`, `/help`, `/search`, `/admin/login`, `/community`) are fully covered via `page.route()` network mocking.
 
 **SplashScreen skip** — set `localStorage.nosplash = '1'` before navigating in any E2E test, otherwise the 8.5-second splash blocks interactions:
 

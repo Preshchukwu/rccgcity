@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MessageCircle } from 'lucide-react'
 import { timeAgo } from '@/lib/format'
 
 interface ReportPreview {
@@ -16,8 +17,12 @@ export default function RecentReports({ reports }: { reports: ReportPreview[] })
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)', margin: 0 }}>
-          Community Reports
+          Community
         </h2>
+        <Link href="/community" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--text-sm)', color: 'var(--color-brand)', fontWeight: 'var(--font-weight-medium)', textDecoration: 'none' }}>
+          <MessageCircle size={14} />
+          See all
+        </Link>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -30,18 +35,7 @@ export default function RecentReports({ reports }: { reports: ReportPreview[] })
             boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <span style={{
-                fontSize: 'var(--text-xs)',
-                fontWeight: 'var(--font-weight-semibold)',
-                color: report.type === 'comment' ? 'var(--color-brand-text)' : 'var(--color-warning-text)',
-                background: report.type === 'comment' ? 'var(--color-brand-subtle)' : 'var(--color-warning-bg)',
-                padding: '1px 8px',
-                borderRadius: 20,
-                textTransform: 'capitalize',
-              }}>
-                {report.type}
-              </span>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)' }}>
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', fontWeight: 'var(--font-weight-medium)' }}>
                 {report.facility.name}
               </span>
             </div>

@@ -20,6 +20,9 @@ export async function GET(request: NextRequest) {
     const facilityId = searchParams.get('facilityId')
     const all = searchParams.get('all') === '1'
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 200)
+    const offset = Math.max(0, parseInt(searchParams.get('offset') ?? '0'))
+    const typeParam = searchParams.get('type')
+    const type = typeParam === 'comment' || typeParam === 'issue' ? typeParam : undefined
 
     if (all) {
       const auth = await requireAdmin()
@@ -30,9 +33,11 @@ export async function GET(request: NextRequest) {
       where: {
         ...(all ? {} : { isHidden: false }),
         ...(facilityId && { facilityId }),
+        ...(type && { type }),
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
+      skip: offset,
       include: { facility: { select: { name: true } } },
     })
 
