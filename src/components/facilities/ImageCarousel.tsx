@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import FacilityInfoCard from './FacilityInfoCard'
+import { getTransformedUrl } from '@/lib/cloudinary-url'
 import type { FacilityCategory, FacilityStatus } from '@/types'
 
 interface ImageCarouselProps {
@@ -10,10 +11,6 @@ interface ImageCarouselProps {
   name: string
   category: FacilityCategory
   status: FacilityStatus
-}
-
-function getTransformedUrl(url: string) {
-  return url.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
 }
 
 export default function ImageCarousel({ images, name, category, status }: ImageCarouselProps) {

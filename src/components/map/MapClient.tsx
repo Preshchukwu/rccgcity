@@ -6,6 +6,8 @@ import CategoryIcon from '@/components/ui/CategoryIcon'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { useFacilityContext } from '@/providers/FacilityProvider'
 import type { Facility, FacilityCategory, FacilityStatus } from '@/types'
+import { FACILITY_CATEGORY_VALUES } from '@/lib/constants'
+import { filterChipStyle } from '@/lib/styles'
 
 export default function MapClient({ initialFacilities }: { initialFacilities: Facility[] }) {
   const [filter, setFilter] = useState('')
@@ -48,24 +50,11 @@ export default function MapClient({ initialFacilities }: { initialFacilities: Fa
 
       {/* Category filter chips */}
       <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
-        {['', 'toilet', 'auditorium', 'food', 'medical', 'parking', 'shuttle', 'hotel', 'accommodation'].map(cat => (
+        {['', ...FACILITY_CATEGORY_VALUES].map(cat => (
           <button
             key={cat}
             onClick={() => setFilter(cat)}
-            style={{
-              padding: '6px 14px',
-              borderRadius: 20,
-              border: `1px solid ${filter === cat ? 'var(--color-brand)' : 'var(--color-border-default)'}`,
-              background: filter === cat ? 'var(--color-brand-subtle)' : 'var(--color-bg-surface)',
-              color: filter === cat ? 'var(--color-brand)' : 'var(--color-text-secondary)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-weight-medium)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 150ms',
-              flexShrink: 0,
-              textTransform: 'capitalize',
-            }}
+            style={{ ...filterChipStyle(filter === cat), textTransform: 'capitalize' }}
           >
             {cat || 'All'}
           </button>

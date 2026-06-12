@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import { formatDateTime } from '@/lib/format'
+import { tableCellStyle, tableHeadStyle } from '@/lib/styles'
 import { AlertTriangle } from 'lucide-react'
 
 export const revalidate = 0
@@ -10,19 +12,8 @@ async function getEmergencies() {
 export default async function EmergenciesPage() {
   const emergencies = await getEmergencies()
 
-  const cellStyle: React.CSSProperties = {
-    padding: '14px 16px', fontSize: 'var(--text-sm)',
-    color: 'var(--color-text-primary)',
-    borderBottom: '1px solid var(--color-border-subtle)', verticalAlign: 'top',
-  }
-
-  const thStyle: React.CSSProperties = {
-    ...cellStyle, color: 'var(--color-text-secondary)',
-    fontWeight: 'var(--font-weight-semibold)',
-    fontSize: 'var(--text-xs)', textTransform: 'uppercase',
-    letterSpacing: 'var(--tracking-wider)', background: 'var(--color-bg-subtle)',
-    verticalAlign: 'middle',
-  }
+  const cellStyle = { ...tableCellStyle, verticalAlign: 'top' as const }
+  const thStyle = { ...tableHeadStyle, verticalAlign: 'middle' as const }
 
   return (
     <div style={{ padding: '28px 28px 40px' }}>
@@ -65,10 +56,7 @@ export default async function EmergenciesPage() {
                     <td style={{ ...cellStyle, color: 'var(--color-danger-text)', maxWidth: 260 }}>{e.issueDescription}</td>
                     <td style={{ ...cellStyle, color: 'var(--color-text-secondary)', maxWidth: 200 }}>{e.locationDescription}</td>
                     <td style={{ ...cellStyle, color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
-                      {new Date(e.createdAt).toLocaleString('en-GB', {
-                        day: 'numeric', month: 'short', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit',
-                      })}
+                      {formatDateTime(e.createdAt)}
                     </td>
                   </tr>
                 ))}

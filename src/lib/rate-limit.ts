@@ -23,9 +23,17 @@ function getRatelimit() {
 export async function checkRateLimit(identifier: string): Promise<{ success: boolean; remaining: number }> {
   const limiter = getRatelimit()
 
-  // No Redis configured — allow all requests in dev
+  // Redis not configured — allow all (expected in dev)
   if (!limiter) return { success: true, remaining: 99 }
 
-  const result = await limiter.limit(identifier)
-  return { success: result.success, remaining: result.remaining }
+  try {
+    const result = await limiter.limit(identifier)
+    return { success: result.success, remaining: result.remaining }
+  } catch {
+    // Redis is configured but unreachable — fail closed in production to prevent spam
+    if (process.env.NODE_ENV === 'production') {
+      return { success: false, remaining: 0 }
+    }
+    return { success: true, remaining: 99 }
+  }
 }

@@ -13,6 +13,11 @@ export default function SplashScreen() {
   const [done,               setDone]               = useState(false)
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.localStorage.getItem('nosplash') === '1') {
+      setDone(true)
+      return
+    }
+
     // Phase 1 — logo fades in immediately
     const t0 = setTimeout(() => setLogoVisible(true), 80)
 

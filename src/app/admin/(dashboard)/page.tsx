@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import MetricCard from '@/components/admin/MetricCard'
 import { Building2, Flag, Users, AlertTriangle, CheckCircle } from 'lucide-react'
+import { FACILITY_STATUS_LABELS, FACILITY_STATUS_ACCENTS, FACILITY_STATUS_VALUES } from '@/lib/constants'
 
 export const revalidate = 60
 
@@ -44,14 +45,6 @@ async function getMetrics() {
 export default async function AdminOverviewPage() {
   const { facilityCount, openCount, reportsCount, pendingRequests, emergenciesCount, topFacilityDetails, statusBreakdown } = await getMetrics()
 
-  const STATUS_LABELS: Record<string, string> = {
-    open: 'Open', closed: 'Closed', crowded: 'Crowded', maintenance: 'Maintenance',
-  }
-
-  const STATUS_ACCENTS: Record<string, 'success' | 'danger' | 'warning' | 'brand'> = {
-    open: 'success', closed: 'danger', crowded: 'warning', maintenance: 'brand',
-  }
-
   return (
     <div style={{ padding: '28px 28px 40px' }}>
       <div style={{ marginBottom: 28 }}>
@@ -65,10 +58,10 @@ export default async function AdminOverviewPage() {
 
       {/* Key metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 32 }}>
-        <MetricCard label="Total Facilities" value={facilityCount} icon={Building2} accent="brand" sub={`${openCount} currently open`} />
-        <MetricCard label="Reports (30 days)" value={reportsCount} icon={Flag} accent="warning" />
-        <MetricCard label="Pending Tour Requests" value={pendingRequests} icon={Users} accent="success" />
-        <MetricCard label="Emergencies (30 days)" value={emergenciesCount} icon={AlertTriangle} accent="danger" />
+        <MetricCard label="Total Facilities" value={facilityCount} icon={Building2} accent={FACILITY_STATUS_ACCENTS.open} sub={`${openCount} currently open`} />
+        <MetricCard label="Reports (30 days)" value={reportsCount} icon={Flag} accent={FACILITY_STATUS_ACCENTS.crowded} />
+        <MetricCard label="Pending Tour Requests" value={pendingRequests} icon={Users} accent={FACILITY_STATUS_ACCENTS.open} />
+        <MetricCard label="Emergencies (30 days)" value={emergenciesCount} icon={AlertTriangle} accent={FACILITY_STATUS_ACCENTS.closed} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
@@ -78,11 +71,11 @@ export default async function AdminOverviewPage() {
             Facilities by Status
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {(['open', 'closed', 'crowded', 'maintenance'] as const).map(s => (
+            {FACILITY_STATUS_VALUES.map(s => (
               <div key={s} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: `var(--color-status-${s})` }} />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{STATUS_LABELS[s]}</span>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{FACILITY_STATUS_LABELS[s]}</span>
                 </div>
                 <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>
                   {statusBreakdown[s] ?? 0}

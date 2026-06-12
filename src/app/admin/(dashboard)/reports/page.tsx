@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Trash2, Loader2, RefreshCw, Eye, EyeOff } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import DeleteConfirmDialog from '@/components/ui/DeleteConfirmDialog'
+import { tableCellStyle, tableHeadStyle, tableRowHoverHandlers } from '@/lib/styles'
 
 type Report = {
   id: string
@@ -20,6 +22,8 @@ const TYPE_COLOR: Record<string, { bg: string; text: string }> = {
   comment: { bg: 'var(--color-brand-subtle)', text: 'var(--color-brand)' },
   issue:   { bg: 'var(--color-warning-bg)',   text: 'var(--color-warning-text)' },
 }
+
+const cellStyle = { ...tableCellStyle, padding: '12px 16px' }
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([])
@@ -57,19 +61,6 @@ export default function ReportsPage() {
     setReports(prev => prev.filter(r => r.id !== id))
   }
 
-  const cellStyle: React.CSSProperties = {
-    padding: '12px 16px', fontSize: 'var(--text-sm)',
-    color: 'var(--color-text-primary)',
-    borderBottom: '1px solid var(--color-border-subtle)', verticalAlign: 'middle',
-  }
-
-  const thStyle: React.CSSProperties = {
-    ...cellStyle, color: 'var(--color-text-secondary)',
-    fontWeight: 'var(--font-weight-semibold)',
-    fontSize: 'var(--text-xs)', textTransform: 'uppercase',
-    letterSpacing: 'var(--tracking-wider)', background: 'var(--color-bg-subtle)',
-  }
-
   return (
     <div style={{ padding: '28px 28px 40px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -98,24 +89,20 @@ export default function ReportsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Facility</th>
-                  <th style={thStyle}>Type</th>
-                  <th style={thStyle}>Description</th>
-                  <th style={thStyle}>Severity</th>
-                  <th style={thStyle}>Date</th>
-                  <th style={thStyle}>Visible</th>
-                  <th style={{ ...thStyle, width: 80, textAlign: 'right' }}>Del</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px' }}>Facility</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px' }}>Type</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px' }}>Description</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px' }}>Severity</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px' }}>Date</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px' }}>Visible</th>
+                  <th style={{ ...tableHeadStyle, padding: '12px 16px', width: 80, textAlign: 'right' }}>Del</th>
                 </tr>
               </thead>
               <tbody>
                 {reports.map(r => {
                   const colors = TYPE_COLOR[r.type] ?? TYPE_COLOR.comment
                   return (
-                    <tr key={r.id}
-                      style={{ opacity: r.isHidden ? 0.5 : 1 }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-subtle)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
+                    <tr key={r.id} style={{ opacity: r.isHidden ? 0.5 : 1 }} {...tableRowHoverHandlers}>
                       <td style={{ ...cellStyle, fontWeight: 'var(--font-weight-medium)' }}>{r.facility.name}</td>
                       <td style={cellStyle}>
                         <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 20, fontSize: 'var(--text-xs)', fontWeight: 'var(--font-weight-semibold)', background: colors.bg, color: colors.text }}>
@@ -127,9 +114,7 @@ export default function ReportsPage() {
                           {r.description}
                         </span>
                       </td>
-                      <td style={{ ...cellStyle, color: 'var(--color-text-secondary)' }}>
-                        {r.severity ?? '—'}
-                      </td>
+                      <td style={{ ...cellStyle, color: 'var(--color-text-secondary)' }}>{r.severity ?? '—'}</td>
                       <td style={{ ...cellStyle, color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                         {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
@@ -173,16 +158,12 @@ export default function ReportsPage() {
       </div>
 
       {deleteId && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'var(--color-bg-overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: 'var(--color-bg-surface)', borderRadius: 16, padding: '28px', width: '100%', maxWidth: 380, boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)', margin: '0 0 8px' }}>Delete report?</h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', margin: '0 0 20px' }}>This will permanently remove the report. This cannot be undone.</p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <Button variant="ghost" onClick={() => setDeleteId(null)} style={{ flex: 1 }}>Cancel</Button>
-              <Button variant="danger" onClick={() => handleDelete(deleteId)} style={{ flex: 1 }}>Delete</Button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmDialog
+          title="Delete report?"
+          message="This will permanently remove the report. This cannot be undone."
+          onConfirm={() => handleDelete(deleteId)}
+          onCancel={() => setDeleteId(null)}
+        />
       )}
     </div>
   )

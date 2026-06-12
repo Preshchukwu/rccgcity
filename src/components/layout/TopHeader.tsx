@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Globe } from 'lucide-react'
 import DarkModeToggle from './DarkModeToggle'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const navLinks = [
   { href: '/',       label: 'Home'             },
@@ -78,19 +78,7 @@ export default function TopHeader() {
 
       {/* Right actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
-        <button
-          title="Language switcher — coming soon"
-          disabled
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: 36, height: 36, borderRadius: 8,
-            background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border-default)',
-            color: 'var(--color-text-secondary)', cursor: 'not-allowed',
-          }}
-          aria-label="Language switcher (coming soon)"
-        >
-          <Globe size={16} />
-        </button>
+        <LanguageSwitcher />
         <DarkModeToggle />
       </div>
     </header>

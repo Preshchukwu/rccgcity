@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { MapPin, Clock, Navigation } from 'lucide-react'
+import { MapPin, Clock, Navigation, AlertCircle } from 'lucide-react'
+import { timeAgo, formatDateTime } from '@/lib/format'
 import { useFacilityContext } from '@/providers/FacilityProvider'
 import Drawer from '@/components/ui/Drawer'
 import StatusBadge from '@/components/ui/StatusBadge'
@@ -13,28 +14,13 @@ import type { Facility, Report } from '@/types'
 
 type ReportWithFacility = Report & { facility?: { name: string } }
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
-}
-
-function formatDateTime(dateStr: string) {
-  return new Date(dateStr).toLocaleString('en-GB', {
-    day: 'numeric', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
-}
 
 export default function GlobalFacilityDrawer() {
   const { selectedFacilityId, closeFacility } = useFacilityContext()
   const [facility, setFacility] = useState<Facility | null>(null)
   const [reports, setReports] = useState<ReportWithFacility[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
@@ -42,16 +28,38 @@ export default function GlobalFacilityDrawer() {
       setFacility(null)
       setReports([])
       setShowForm(false)
+      setError(null)
       return
     }
+
     setLoading(true)
-    Promise.all([
-      fetch(`/api/facilities/${selectedFacilityId}`).then(r => r.json()),
-      fetch(`/api/reports?facilityId=${selectedFacilityId}`).then(r => r.json()),
-    ]).then(([fac, reps]) => {
-      setFacility(fac)
-      setReports(reps)
-    }).finally(() => setLoading(false))
+    setError(null)
+
+    async function load() {
+      try {
+        const [facRes, repsRes] = await Promise.all([
+          fetch(`/api/facilities/${selectedFacilityId}`),
+          fetch(`/api/reports?facilityId=${selectedFacilityId}`),
+        ])
+
+        if (!facRes.ok) {
+          throw new Error(facRes.status === 404 ? 'Facility not found.' : 'Failed to load facility.')
+        }
+        if (!repsRes.ok) {
+          throw new Error('Failed to load reports.')
+        }
+
+        const [fac, reps] = await Promise.all([facRes.json(), repsRes.json()])
+        setFacility(fac)
+        setReports(Array.isArray(reps) ? reps : [])
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    load()
   }, [selectedFacilityId])
 
   const handleReportSuccess = useCallback((newReport: Record<string, unknown>) => {
@@ -73,7 +81,20 @@ export default function GlobalFacilityDrawer() {
         </div>
       )}
 
-      {!loading && facility && (
+      {!loading && error && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '48px 24px', textAlign: 'center' }}>
+          <AlertCircle size={32} style={{ color: 'var(--color-danger)' }} />
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>{error}</p>
+          <button
+            onClick={closeFacility}
+            style={{ fontSize: 'var(--text-sm)', color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && facility && (
         <div style={{ padding: '0 20px 32px' }}>
           {/* Header */}
           <div style={{ marginBottom: 16 }}>

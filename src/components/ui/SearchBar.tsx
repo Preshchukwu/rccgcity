@@ -5,14 +5,7 @@ import { Search, X } from 'lucide-react'
 import { useFacilityContext } from '@/providers/FacilityProvider'
 import StatusBadge from './StatusBadge'
 import type { Facility } from '@/types'
-
-function debounce<T extends (...args: Parameters<T>) => void>(fn: T, ms: number) {
-  let timer: ReturnType<typeof setTimeout>
-  return (...args: Parameters<T>) => {
-    clearTimeout(timer)
-    timer = setTimeout(() => fn(...args), ms)
-  }
-}
+import { debounce } from '@/lib/debounce'
 
 export default function SearchBar() {
   const [query, setQuery] = useState('')
@@ -28,8 +21,9 @@ export default function SearchBar() {
       setLoading(true)
       try {
         const res = await fetch(`/api/facilities?q=${encodeURIComponent(q)}`)
+        if (!res.ok) { setResults([]); return }
         const data = await res.json()
-        setResults(data.slice(0, 6))
+        setResults(Array.isArray(data) ? data.slice(0, 6) : [])
       } finally {
         setLoading(false)
       }

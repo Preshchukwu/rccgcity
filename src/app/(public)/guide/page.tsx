@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { UserCheck } from 'lucide-react'
 import Button from '@/components/ui/Button'
-
-const LANGUAGES = ['English', 'Yoruba', 'Igbo', 'Hausa', 'French']
+import { SUPPORTED_LANGUAGE_NAMES } from '@/lib/constants'
+import { formInputStyle, formLabelStyle } from '@/lib/styles'
 
 export default function GuidePage() {
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', nationality: '', arrivalDate: '', preferredLanguage: 'English', message: '' })
@@ -74,34 +74,34 @@ export default function GuidePage() {
           { key: 'arrivalDate', label: 'Arrival date',     type: 'date',  placeholder: '',                    required: true  },
         ].map(field => (
           <div key={field.key}>
-            <label style={labelStyle}>{field.label} {field.required && '*'}</label>
+            <label style={formLabelStyle}>{field.label} {field.required && '*'}</label>
             <input
               type={field.type}
               required={field.required}
               value={form[field.key as keyof typeof form]}
               onChange={e => update(field.key, e.target.value)}
               placeholder={field.placeholder}
-              style={inputStyle}
+              style={formInputStyle}
             />
           </div>
         ))}
 
         <div>
-          <label style={labelStyle}>Preferred language *</label>
-          <select value={form.preferredLanguage} onChange={e => update('preferredLanguage', e.target.value)} style={inputStyle}>
-            {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+          <label style={formLabelStyle}>Preferred language *</label>
+          <select value={form.preferredLanguage} onChange={e => update('preferredLanguage', e.target.value)} style={formInputStyle}>
+            {SUPPORTED_LANGUAGE_NAMES.map(l => <option key={l} value={l}>{l}</option>)}
           </select>
         </div>
 
         <div>
-          <label style={labelStyle}>Special requests (optional)</label>
+          <label style={formLabelStyle}>Special requests (optional)</label>
           <textarea
             value={form.message}
             onChange={e => update('message', e.target.value)}
             rows={3}
             maxLength={2000}
             placeholder="Accessibility needs, areas you want to visit, etc."
-            style={{ ...inputStyle, resize: 'vertical', minHeight: 80 }}
+            style={{ ...formInputStyle, resize: 'vertical', minHeight: 80 }}
           />
         </div>
 
@@ -113,17 +113,4 @@ export default function GuidePage() {
       </form>
     </div>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block', marginBottom: 6,
-  fontSize: 'var(--text-sm)', fontWeight: 'var(--font-weight-medium)',
-  color: 'var(--color-text-secondary)',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '10px 12px',
-  borderRadius: 8, border: '1px solid var(--color-border-default)',
-  background: 'var(--color-bg-subtle)', color: 'var(--color-text-primary)',
-  fontSize: 'var(--text-base)', outline: 'none',
 }

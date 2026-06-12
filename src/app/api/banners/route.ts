@@ -14,31 +14,41 @@ const CreateBannerSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  const all = new URL(request.url).searchParams.get('all') === '1'
+  try {
+    const all = new URL(request.url).searchParams.get('all') === '1'
 
-  if (all) {
-    const auth = await requireAdmin()
-    if (auth.error) return auth.error
+    if (all) {
+      const auth = await requireAdmin()
+      if (auth.error) return auth.error
+    }
+
+    const banners = await prisma.bannerCard.findMany({
+      where: all ? {} : { isActive: true },
+      orderBy: { displayOrder: 'asc' },
+    })
+    return NextResponse.json(banners)
+  } catch (err) {
+    console.error('[GET /api/banners]', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  const banners = await prisma.bannerCard.findMany({
-    where: all ? {} : { isActive: true },
-    orderBy: { displayOrder: 'asc' },
-  })
-  return NextResponse.json(banners)
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireAdmin()
-  if (auth.error) return auth.error
+  try {
+    const auth = await requireAdmin()
+    if (auth.error) return auth.error
 
-  const body = await request.json()
-  const parsed = CreateBannerSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    const body = await request.json()
+    const parsed = CreateBannerSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    }
+
+    const banner = await prisma.bannerCard.create({ data: parsed.data })
+    revalidatePath('/')
+    return NextResponse.json(banner, { status: 201 })
+  } catch (err) {
+    console.error('[POST /api/banners]', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  const banner = await prisma.bannerCard.create({ data: parsed.data })
-  revalidatePath('/')
-  return NextResponse.json(banner, { status: 201 })
 }

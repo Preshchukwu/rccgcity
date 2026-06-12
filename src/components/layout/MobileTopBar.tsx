@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Globe } from 'lucide-react'
 import DarkModeToggle from './DarkModeToggle'
+import LanguageSwitcher from './LanguageSwitcher'
 
 function getGreeting(): { line1: string; line2: string } {
   const hour = new Date().getHours()
@@ -55,22 +55,7 @@ export default function MobileTopBar() {
 
       {/* Toggles */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          disabled
-          title="Language switcher — coming soon"
-          aria-label="Language switcher (coming soon)"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: 32, height: 32, borderRadius: 8,
-            background: 'var(--color-bg-subtle)',
-            border: '1px solid var(--color-border-default)',
-            color: 'var(--color-text-secondary)',
-            cursor: 'not-allowed',
-            flexShrink: 0,
-          }}
-        >
-          <Globe size={15} />
-        </button>
+        <LanguageSwitcher size="sm" />
         <DarkModeToggle size="sm" />
       </div>
     </div>

@@ -109,10 +109,62 @@ background: banner.imageUrl
 
 Not yet integrated — deferred until RCCG provides official camp map data. `MapClient.tsx` renders a filterable facility list as the current fallback. Do not attempt to add a Maps API key or SDK until the data is available.
 
+## Testing
+
+Three-layer pyramid — all tests run without a real database.
+
+| Layer | Runner | Command | Count |
+|---|---|---|---|
+| Unit | Vitest | `npm run test:run` | 34 |
+| Integration | Vitest | `npm run test:run` | 54 |
+| E2E | Playwright | `npm run test:e2e` | 16 |
+
+**Unit tests** live in `src/lib/__tests__/` — pure functions only (`format`, `debounce`, `cloudinary-url`, `prisma-errors`).
+
+**Integration tests** live in `src/app/api/__tests__/` — route handlers with mocked Prisma, auth, and rate-limit. Import the handler functions directly; no HTTP server needed. Three mock layers used in every file:
+
+```ts
+vi.mock('@/lib/prisma', () => ({ prisma: { facility: { findMany: vi.fn(), ... } } }))
+vi.mock('@/lib/auth',   () => ({ requireAdmin: vi.fn() }))
+vi.mock('next/cache',   () => ({ revalidatePath: vi.fn() }))
+```
+
+**E2E tests** live in `e2e/` and run against the live dev server (`reuseExistingServer: true`). Pages that need the DB (`/`, `/map`) are not covered — they require a seeded test database. Client-only pages (`/guide`, `/help`, `/search`, `/admin/login`) are fully covered via `page.route()` network mocking.
+
+**SplashScreen skip** — set `localStorage.nosplash = '1'` before navigating in any E2E test, otherwise the 8.5-second splash blocks interactions:
+
+```ts
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('nosplash', '1'))
+})
+```
+
+## Cloudinary
+
+The cloudinary SDK uses Node.js `fs` and must never be bundled for the browser. Split into two files:
+
+- **`src/lib/cloudinary-url.ts`** — `extractPublicId`, `getTransformedUrl`. Browser-safe, no SDK import. Import this in any client component.
+- **`src/lib/cloudinary.ts`** — `uploadImage`, `deleteImage`, and SDK config. Server-only. Import only in API routes.
+
+## Shared Utilities
+
+| File | What it contains |
+|---|---|
+| `src/lib/constants.ts` | All enum arrays + label/color/accent maps (`FACILITY_*`, `GUIDE_REQUEST_*`, `SUPPORTED_LANGUAGES*`) |
+| `src/lib/styles.ts` | Shared inline style objects (`adminInputStyle`, `tableCellStyle`, `filterChipStyle`, etc.) |
+| `src/lib/prisma-errors.ts` | `isNotFound(err)` — P2025 check used by all `[id]` routes |
+| `src/lib/debounce.ts` | Generic debounce utility |
+| `src/lib/format.ts` | `timeAgo`, `formatDateTime` |
+| `src/lib/cloudinary-url.ts` | Browser-safe Cloudinary URL helpers |
+
+Always import from these files — do not re-declare inline.
+
 ## Pending Work
 
-- [ ] Migrate `@supabase/auth-helpers-nextjs` → `@supabase/ssr` (package deprecated)
+- [x] Migrate `@supabase/auth-helpers-nextjs` → `@supabase/ssr` (package deprecated)
 - [ ] Wire up Globe button language switcher (entry points exist in `MobileTopBar`, `TopHeader`)
+- [x] Testing pyramid — Vitest (unit + integration) + Playwright (E2E)
+- [x] DRY pass — all enums, labels, styles, utilities centralised
 - [ ] Upstash Redis rate limiting (currently stubbed to `{ success: true }`)
 - [ ] Google Maps integration (backlog — pending RCCG map data)
 - [ ] Multilingual support via DeepSeek (backlog — after RCCG testing phase)

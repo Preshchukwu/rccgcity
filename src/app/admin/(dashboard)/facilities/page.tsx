@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { Plus, Pencil, Trash2, Loader2, RefreshCw } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import FacilityForm from '@/components/admin/FacilityForm'
+import DeleteConfirmDialog from '@/components/ui/DeleteConfirmDialog'
+import { tableCellStyle, tableHeadStyle, tableRowHoverHandlers } from '@/lib/styles'
+import { FACILITY_CATEGORY_LABELS, FACILITY_STATUS_LABELS, FACILITY_STATUS_COLORS } from '@/lib/constants'
 
 type Facility = {
   id: string
@@ -15,21 +18,6 @@ type Facility = {
   longitude: number
   images: string[]
   updatedAt: string
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  open: 'Open', closed: 'Closed', crowded: 'Crowded', maintenance: 'Maintenance',
-}
-
-const CATEGORY_LABELS: Record<string, string> = {
-  toilet: 'Toilets', auditorium: 'Auditoriums', food: 'Food & Eateries',
-  medical: 'Medical', parking: 'Parking', shuttle: 'Shuttle Stops',
-  hotel: 'Hotels', accommodation: 'Accommodation',
-}
-
-const STATUS_COLOR: Record<string, string> = {
-  open: 'var(--color-status-open)', closed: 'var(--color-status-closed)',
-  crowded: 'var(--color-status-crowded)', maintenance: 'var(--color-status-maintenance)',
 }
 
 export default function FacilitiesPage() {
@@ -70,24 +58,6 @@ export default function FacilitiesPage() {
     setStatusUpdating(null)
   }
 
-  const cellStyle: React.CSSProperties = {
-    padding: '14px 16px',
-    fontSize: 'var(--text-sm)',
-    color: 'var(--color-text-primary)',
-    borderBottom: '1px solid var(--color-border-subtle)',
-    verticalAlign: 'middle',
-  }
-
-  const thStyle: React.CSSProperties = {
-    ...cellStyle,
-    color: 'var(--color-text-secondary)',
-    fontWeight: 'var(--font-weight-semibold)',
-    fontSize: 'var(--text-xs)',
-    textTransform: 'uppercase',
-    letterSpacing: 'var(--tracking-wider)',
-    background: 'var(--color-bg-subtle)',
-  }
-
   return (
     <div style={{ padding: '28px 28px 40px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -121,32 +91,29 @@ export default function FacilitiesPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Name</th>
-                  <th style={thStyle}>Category</th>
-                  <th style={thStyle}>Status</th>
-                  <th style={thStyle}>Last Updated</th>
-                  <th style={{ ...thStyle, width: 120, textAlign: 'right' }}>Actions</th>
+                  <th style={tableHeadStyle}>Name</th>
+                  <th style={tableHeadStyle}>Category</th>
+                  <th style={tableHeadStyle}>Status</th>
+                  <th style={tableHeadStyle}>Last Updated</th>
+                  <th style={{ ...tableHeadStyle, width: 120, textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {facilities.map(f => (
-                  <tr key={f.id} style={{ transition: 'background 100ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-subtle)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <td style={cellStyle}>
+                  <tr key={f.id} style={{ transition: 'background 100ms' }} {...tableRowHoverHandlers}>
+                    <td style={tableCellStyle}>
                       <span style={{ fontWeight: 'var(--font-weight-medium)' }}>{f.name}</span>
                     </td>
-                    <td style={cellStyle}>
+                    <td style={tableCellStyle}>
                       <span style={{
                         display: 'inline-block', padding: '2px 10px', borderRadius: 20,
                         fontSize: 'var(--text-xs)', fontWeight: 'var(--font-weight-semibold)',
                         background: 'var(--color-brand-subtle)', color: 'var(--color-brand)',
                       }}>
-                        {CATEGORY_LABELS[f.category] ?? f.category}
+                        {FACILITY_CATEGORY_LABELS[f.category as keyof typeof FACILITY_CATEGORY_LABELS] ?? f.category}
                       </span>
                     </td>
-                    <td style={cellStyle}>
+                    <td style={tableCellStyle}>
                       {statusUpdating === f.id ? (
                         <Loader2 size={14} className="animate-spin" style={{ color: 'var(--color-text-secondary)' }} />
                       ) : (
@@ -155,21 +122,21 @@ export default function FacilitiesPage() {
                           onChange={e => handleStatusChange(f.id, e.target.value)}
                           style={{
                             border: 'none', background: 'transparent',
-                            color: STATUS_COLOR[f.status] ?? 'var(--color-text-primary)',
+                            color: FACILITY_STATUS_COLORS[f.status as keyof typeof FACILITY_STATUS_COLORS] ?? 'var(--color-text-primary)',
                             fontWeight: 'var(--font-weight-semibold)',
                             fontSize: 'var(--text-sm)', cursor: 'pointer', outline: 'none',
                           }}
                         >
-                          {Object.entries(STATUS_LABELS).map(([v, l]) => (
+                          {Object.entries(FACILITY_STATUS_LABELS).map(([v, l]) => (
                             <option key={v} value={v}>{l}</option>
                           ))}
                         </select>
                       )}
                     </td>
-                    <td style={{ ...cellStyle, color: 'var(--color-text-secondary)' }}>
+                    <td style={{ ...tableCellStyle, color: 'var(--color-text-secondary)' }}>
                       {new Date(f.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: 'right' }}>
+                    <td style={{ ...tableCellStyle, textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                         <button
                           onClick={() => { setEditing(f); setShowForm(true) }}
@@ -205,7 +172,6 @@ export default function FacilitiesPage() {
         )}
       </div>
 
-      {/* Facility form modal */}
       {showForm && (
         <FacilityForm
           initial={editing ?? undefined}
@@ -214,30 +180,13 @@ export default function FacilitiesPage() {
         />
       )}
 
-      {/* Delete confirm */}
       {deleteId && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 60,
-          background: 'var(--color-bg-overlay)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
-        }}>
-          <div style={{
-            background: 'var(--color-bg-surface)', borderRadius: 16,
-            padding: '28px 28px', width: '100%', maxWidth: 380,
-            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-          }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)', margin: '0 0 8px' }}>
-              Delete facility?
-            </h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', margin: '0 0 20px' }}>
-              This will permanently remove the facility and all its reports. This action cannot be undone.
-            </p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <Button variant="ghost" onClick={() => setDeleteId(null)} style={{ flex: 1 }}>Cancel</Button>
-              <Button variant="danger" onClick={() => handleDelete(deleteId)} style={{ flex: 1 }}>Delete</Button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmDialog
+          title="Delete facility?"
+          message="This will permanently remove the facility and all its reports. This action cannot be undone."
+          onConfirm={() => handleDelete(deleteId)}
+          onCancel={() => setDeleteId(null)}
+        />
       )}
     </div>
   )

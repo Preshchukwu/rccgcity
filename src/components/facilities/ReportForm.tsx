@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Button from '@/components/ui/Button'
+import { filterChipStyle } from '@/lib/styles'
 
 interface ReportFormProps {
   facilityId: string
@@ -163,15 +164,5 @@ const textareaStyle: React.CSSProperties = {
 }
 
 function chipStyle(active: boolean): React.CSSProperties {
-  return {
-    padding: '6px 12px',
-    borderRadius: 20,
-    border: `1px solid ${active ? 'var(--color-brand)' : 'var(--color-border-default)'}`,
-    background: active ? 'var(--color-brand-subtle)' : 'var(--color-bg-surface)',
-    color: active ? 'var(--color-brand)' : 'var(--color-text-secondary)',
-    fontSize: 'var(--text-sm)',
-    fontWeight: 'var(--font-weight-medium)',
-    cursor: 'pointer',
-    transition: 'all 150ms',
-  }
+  return { ...filterChipStyle(active), padding: '6px 12px' }
 }

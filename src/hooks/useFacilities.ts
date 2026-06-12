@@ -40,7 +40,9 @@ export function useFacilities() {
           )
         }
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        if (err) console.error('[useFacilities] Realtime subscription error:', err)
+      })
 
     return () => {
       supabase.removeChannel(channel)

@@ -7,6 +7,8 @@ import CategoryIcon from '@/components/ui/CategoryIcon'
 import Spinner from '@/components/ui/Spinner'
 import { useFacilityContext } from '@/providers/FacilityProvider'
 import type { Facility, FacilityCategory, FacilityStatus } from '@/types'
+import { debounce } from '@/lib/debounce'
+import { filterChipStyle } from '@/lib/styles'
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: '', label: 'All' },
@@ -28,10 +30,6 @@ const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: 'accommodation', label: 'Accommodation' },
 ]
 
-function debounce<T extends (...args: Parameters<T>) => void>(fn: T, ms: number) {
-  let timer: ReturnType<typeof setTimeout>
-  return (...args: Parameters<T>) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms) }
-}
 
 export default function SearchPage() {
   const [query, setQuery] = useState('')
@@ -87,14 +85,14 @@ export default function SearchPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
         {STATUS_OPTIONS.map(o => (
-          <button key={o.value} onClick={() => update(query, o.value, category)} style={filterChip(status === o.value)}>
+          <button key={o.value} onClick={() => update(query, o.value, category)} style={filterChipStyle(status === o.value)}>
             {o.label}
           </button>
         ))}
       </div>
       <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
         {CATEGORY_OPTIONS.map(o => (
-          <button key={o.value} onClick={() => update(query, status, o.value)} style={filterChip(category === o.value)}>
+          <button key={o.value} onClick={() => update(query, status, o.value)} style={filterChipStyle(category === o.value)}>
             {o.label}
           </button>
         ))}
@@ -130,18 +128,3 @@ export default function SearchPage() {
   )
 }
 
-function filterChip(active: boolean): React.CSSProperties {
-  return {
-    padding: '6px 14px',
-    borderRadius: 20,
-    border: `1px solid ${active ? 'var(--color-brand)' : 'var(--color-border-default)'}`,
-    background: active ? 'var(--color-brand-subtle)' : 'var(--color-bg-surface)',
-    color: active ? 'var(--color-brand)' : 'var(--color-text-secondary)',
-    fontSize: 'var(--text-sm)',
-    fontWeight: 'var(--font-weight-medium)',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    transition: 'all 150ms',
-    flexShrink: 0,
-  }
-}

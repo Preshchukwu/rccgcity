@@ -3,24 +3,12 @@
 import { useState, useRef } from 'react'
 import { X, Upload, Trash2, Loader2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import { extractPublicId } from '@/lib/cloudinary-url'
+import { adminInputStyle, adminLabelStyle } from '@/lib/styles'
+import { FACILITY_CATEGORY_VALUES, FACILITY_CATEGORY_LABELS, FACILITY_STATUS_VALUES, FACILITY_STATUS_LABELS } from '@/lib/constants'
 
-const CATEGORIES = [
-  { value: 'toilet',        label: 'Toilets'            },
-  { value: 'auditorium',    label: 'Auditoriums'        },
-  { value: 'food',          label: 'Food & Eateries'    },
-  { value: 'medical',       label: 'Medical Centers'    },
-  { value: 'parking',       label: 'Parking'            },
-  { value: 'shuttle',       label: 'Shuttle Stops'      },
-  { value: 'hotel',         label: 'Hotels & Hostels'   },
-  { value: 'accommodation', label: 'Accommodation'      },
-]
-
-const STATUSES = [
-  { value: 'open',        label: 'Open'             },
-  { value: 'closed',      label: 'Closed'           },
-  { value: 'crowded',     label: 'Crowded'          },
-  { value: 'maintenance', label: 'Under Maintenance' },
-]
+const CATEGORIES = FACILITY_CATEGORY_VALUES.map(v => ({ value: v, label: FACILITY_CATEGORY_LABELS[v] }))
+const STATUSES = FACILITY_STATUS_VALUES.map(v => ({ value: v, label: FACILITY_STATUS_LABELS[v] }))
 
 interface FacilityFormProps {
   initial?: {
@@ -45,6 +33,7 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
   const [latitude, setLatitude] = useState(String(initial?.latitude ?? ''))
   const [longitude, setLongitude] = useState(String(initial?.longitude ?? ''))
   const [images, setImages] = useState<string[]>(initial?.images ?? [])
+  const [removedImages, setRemovedImages] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -60,8 +49,9 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
         fd.append('file', file)
         const res = await fetch('/api/upload', { method: 'POST', body: fd })
         if (!res.ok) throw new Error('Upload failed')
-        const { url } = await res.json()
-        uploaded.push(url)
+        const data = await res.json()
+        if (!data.url || typeof data.url !== 'string') throw new Error('Upload failed: invalid response')
+        uploaded.push(data.url)
       }
       setImages(prev => [...prev, ...uploaded])
     } catch {
@@ -73,6 +63,21 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
 
   function removeImage(url: string) {
     setImages(prev => prev.filter(u => u !== url))
+    setRemovedImages(prev => [...prev, url])
+  }
+
+  async function purgeRemovedImages(urls: string[]) {
+    await Promise.allSettled(
+      urls.map(url => {
+        const publicId = extractPublicId(url)
+        if (!publicId) return Promise.resolve()
+        return fetch('/api/upload', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ publicId }),
+        })
+      })
+    )
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -101,33 +106,14 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
         setError(data.error?.message ?? 'Save failed. Please try again.')
         return
       }
+      // Fire-and-forget: clean up removed images from Cloudinary after DB save succeeds
+      if (removedImages.length > 0) purgeRemovedImages(removedImages)
       onSuccess()
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setSaving(false)
     }
-  }
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    height: 44,
-    padding: '0 12px',
-    borderRadius: 8,
-    border: '1px solid var(--color-border-default)',
-    background: 'var(--color-bg-surface)',
-    color: 'var(--color-text-primary)',
-    fontSize: 'var(--text-sm)',
-    outline: 'none',
-    boxSizing: 'border-box',
-  }
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: 'var(--text-sm)',
-    fontWeight: 'var(--font-weight-semibold)',
-    color: 'var(--color-text-primary)',
-    marginBottom: 6,
   }
 
   return (
@@ -166,21 +152,21 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
         <form onSubmit={handleSubmit} style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Name */}
           <div>
-            <label style={labelStyle}>Name *</label>
-            <input style={inputStyle} value={name} onChange={e => setName(e.target.value)} required maxLength={200} placeholder="e.g. Main Hall Toilet Block A" />
+            <label style={adminLabelStyle}>Name *</label>
+            <input style={adminInputStyle} value={name} onChange={e => setName(e.target.value)} required maxLength={200} placeholder="e.g. Main Hall Toilet Block A" />
           </div>
 
           {/* Category + Status row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={labelStyle}>Category *</label>
-              <select style={{ ...inputStyle }} value={category} onChange={e => setCategory(e.target.value)}>
+              <label style={adminLabelStyle}>Category *</label>
+              <select style={{ ...adminInputStyle }} value={category} onChange={e => setCategory(e.target.value)}>
                 {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Status *</label>
-              <select style={{ ...inputStyle }} value={status} onChange={e => setStatus(e.target.value)}>
+              <label style={adminLabelStyle}>Status *</label>
+              <select style={{ ...adminInputStyle }} value={status} onChange={e => setStatus(e.target.value)}>
                 {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
             </div>
@@ -189,20 +175,20 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
           {/* Lat + Lng row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={labelStyle}>Latitude *</label>
-              <input style={inputStyle} type="number" step="any" value={latitude} onChange={e => setLatitude(e.target.value)} required placeholder="6.6341" />
+              <label style={adminLabelStyle}>Latitude *</label>
+              <input style={adminInputStyle} type="number" step="any" value={latitude} onChange={e => setLatitude(e.target.value)} required placeholder="6.6341" />
             </div>
             <div>
-              <label style={labelStyle}>Longitude *</label>
-              <input style={inputStyle} type="number" step="any" value={longitude} onChange={e => setLongitude(e.target.value)} required placeholder="3.5893" />
+              <label style={adminLabelStyle}>Longitude *</label>
+              <input style={adminInputStyle} type="number" step="any" value={longitude} onChange={e => setLongitude(e.target.value)} required placeholder="3.5893" />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label style={labelStyle}>Description</label>
+            <label style={adminLabelStyle}>Description</label>
             <textarea
-              style={{ ...inputStyle, height: 88, padding: '10px 12px', resize: 'vertical' }}
+              style={{ ...adminInputStyle, height: 88, padding: '10px 12px', resize: 'vertical' }}
               value={description}
               onChange={e => setDescription(e.target.value)}
               maxLength={2000}
@@ -212,7 +198,7 @@ export default function FacilityForm({ initial, onSuccess, onCancel }: FacilityF
 
           {/* Images */}
           <div>
-            <label style={labelStyle}>Images</label>
+            <label style={adminLabelStyle}>Images</label>
             {images.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
                 {images.map(url => (

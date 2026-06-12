@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { Plus, Pencil, Trash2, Loader2, RefreshCw, Eye, EyeOff } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import BannerForm from '@/components/admin/BannerForm'
+import DeleteConfirmDialog from '@/components/ui/DeleteConfirmDialog'
+import { tableCellStyle, tableHeadStyle, tableRowHoverHandlers } from '@/lib/styles'
 
 type Banner = {
   id: string
@@ -54,19 +56,6 @@ export default function BannersPage() {
     setToggling(null)
   }
 
-  const cellStyle: React.CSSProperties = {
-    padding: '14px 16px', fontSize: 'var(--text-sm)',
-    color: 'var(--color-text-primary)',
-    borderBottom: '1px solid var(--color-border-subtle)', verticalAlign: 'middle',
-  }
-
-  const thStyle: React.CSSProperties = {
-    ...cellStyle, color: 'var(--color-text-secondary)',
-    fontWeight: 'var(--font-weight-semibold)',
-    fontSize: 'var(--text-xs)', textTransform: 'uppercase',
-    letterSpacing: 'var(--tracking-wider)', background: 'var(--color-bg-subtle)',
-  }
-
   return (
     <div style={{ padding: '28px 28px 40px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -100,19 +89,16 @@ export default function BannersPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 600 }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Banner</th>
-                  <th style={thStyle}>Status</th>
-                  <th style={thStyle}>Order</th>
-                  <th style={{ ...thStyle, width: 120, textAlign: 'right' }}>Actions</th>
+                  <th style={tableHeadStyle}>Banner</th>
+                  <th style={tableHeadStyle}>Status</th>
+                  <th style={tableHeadStyle}>Order</th>
+                  <th style={{ ...tableHeadStyle, width: 120, textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {banners.map(b => (
-                  <tr key={b.id}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-subtle)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <td style={cellStyle}>
+                  <tr key={b.id} {...tableRowHoverHandlers}>
+                    <td style={tableCellStyle}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         {b.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -124,7 +110,7 @@ export default function BannersPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={cellStyle}>
+                    <td style={tableCellStyle}>
                       <span style={{
                         display: 'inline-block', padding: '2px 10px', borderRadius: 20,
                         fontSize: 'var(--text-xs)', fontWeight: 'var(--font-weight-semibold)',
@@ -134,10 +120,10 @@ export default function BannersPage() {
                         {b.isActive ? 'Active' : 'Hidden'}
                       </span>
                     </td>
-                    <td style={{ ...cellStyle, color: 'var(--color-text-secondary)' }}>
+                    <td style={{ ...tableCellStyle, color: 'var(--color-text-secondary)' }}>
                       {b.displayOrder}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: 'right' }}>
+                    <td style={{ ...tableCellStyle, textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                         <button
                           onClick={() => handleToggleActive(b)}
@@ -195,16 +181,12 @@ export default function BannersPage() {
       )}
 
       {deleteId && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'var(--color-bg-overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: 'var(--color-bg-surface)', borderRadius: 16, padding: '28px 28px', width: '100%', maxWidth: 380, boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)', margin: '0 0 8px' }}>Delete banner?</h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', margin: '0 0 20px' }}>This will permanently remove the banner from the home screen.</p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <Button variant="ghost" onClick={() => setDeleteId(null)} style={{ flex: 1 }}>Cancel</Button>
-              <Button variant="danger" onClick={() => handleDelete(deleteId)} style={{ flex: 1 }}>Delete</Button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmDialog
+          title="Delete banner?"
+          message="This will permanently remove the banner from the home screen."
+          onConfirm={() => handleDelete(deleteId)}
+          onCancel={() => setDeleteId(null)}
+        />
       )}
     </div>
   )

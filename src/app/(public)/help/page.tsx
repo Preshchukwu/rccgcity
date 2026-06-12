@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Phone, MapPin, AlertTriangle, UserCheck } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import { SECURITY_PHONE, MEDICAL_CENTER_LAT, MEDICAL_CENTER_LNG } from '@/lib/constants'
+import { formInputStyle, formLabelStyle } from '@/lib/styles'
 
 export default function HelpPage() {
   const [name, setName] = useState('')
@@ -40,7 +42,7 @@ export default function HelpPage() {
 
       {/* Security call */}
       <a
-        href="tel:+2348000000000"
+        href={`tel:${SECURITY_PHONE}`}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -79,7 +81,7 @@ export default function HelpPage() {
           </div>
         </div>
         <a
-          href="https://www.google.com/maps/dir/?api=1&destination=6.8802,3.7255"
+          href={`https://www.google.com/maps/dir/?api=1&destination=${MEDICAL_CENTER_LAT},${MEDICAL_CENTER_LNG}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -125,7 +127,7 @@ export default function HelpPage() {
               { label: 'Your location', value: location, onChange: setLocation, placeholder: 'Near which landmark or building?' },
             ].map(field => (
               <div key={field.label}>
-                <label style={labelStyle}>{field.label} *</label>
+                <label style={formLabelStyle}>{field.label} *</label>
                 <input
                   type="text"
                   required
@@ -133,7 +135,7 @@ export default function HelpPage() {
                   onChange={e => field.onChange(e.target.value)}
                   placeholder={field.placeholder}
                   maxLength={500}
-                  style={inputStyle}
+                  style={formInputStyle}
                 />
               </div>
             ))}
@@ -174,17 +176,4 @@ export default function HelpPage() {
       </Link>
     </div>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block', marginBottom: 6,
-  fontSize: 'var(--text-sm)', fontWeight: 'var(--font-weight-medium)',
-  color: 'var(--color-text-secondary)',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '10px 12px',
-  borderRadius: 8, border: '1px solid var(--color-border-default)',
-  background: 'var(--color-bg-subtle)', color: 'var(--color-text-primary)',
-  fontSize: 'var(--text-base)', outline: 'none',
 }

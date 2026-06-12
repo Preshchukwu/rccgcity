@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Loader2, RefreshCw } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import { tableCellStyle, tableHeadStyle, tableRowHoverHandlers } from '@/lib/styles'
+import { GUIDE_REQUEST_STATUS_VALUES } from '@/lib/constants'
 
 type Request = {
   id: string
@@ -17,12 +19,13 @@ type Request = {
   createdAt: string
 }
 
-const STATUS_OPTIONS = ['pending', 'contacted', 'resolved'] as const
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   pending:   { bg: 'var(--color-warning-bg)',  text: 'var(--color-warning-text)' },
   contacted: { bg: 'var(--color-brand-subtle)', text: 'var(--color-brand)'       },
   resolved:  { bg: 'var(--color-success-bg)',  text: 'var(--color-success-text)' },
 }
+
+const cellStyle = { ...tableCellStyle, padding: '13px 16px' }
 
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([])
@@ -54,19 +57,6 @@ export default function RequestsPage() {
     setUpdating(null)
   }
 
-  const cellStyle: React.CSSProperties = {
-    padding: '13px 16px', fontSize: 'var(--text-sm)',
-    color: 'var(--color-text-primary)',
-    borderBottom: '1px solid var(--color-border-subtle)', verticalAlign: 'middle',
-  }
-
-  const thStyle: React.CSSProperties = {
-    ...cellStyle, color: 'var(--color-text-secondary)',
-    fontWeight: 'var(--font-weight-semibold)',
-    fontSize: 'var(--text-xs)', textTransform: 'uppercase',
-    letterSpacing: 'var(--tracking-wider)', background: 'var(--color-bg-subtle)',
-  }
-
   return (
     <div style={{ padding: '28px 28px 40px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -95,13 +85,9 @@ export default function RequestsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Name</th>
-                  <th style={thStyle}>Contact</th>
-                  <th style={thStyle}>Nationality</th>
-                  <th style={thStyle}>Arrival</th>
-                  <th style={thStyle}>Language</th>
-                  <th style={thStyle}>Status</th>
-                  <th style={thStyle}>Message</th>
+                  {['Name', 'Contact', 'Nationality', 'Arrival', 'Language', 'Status', 'Message'].map(h => (
+                    <th key={h} style={{ ...tableHeadStyle, padding: '13px 16px' }}>{h}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -109,10 +95,7 @@ export default function RequestsPage() {
                   const styles = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending
                   return (
                     <>
-                      <tr key={r.id}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-subtle)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                      >
+                      <tr key={r.id} {...tableRowHoverHandlers}>
                         <td style={{ ...cellStyle, fontWeight: 'var(--font-weight-medium)' }}>{r.fullName}</td>
                         <td style={cellStyle}>
                           <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>{r.email}</div>
@@ -138,7 +121,9 @@ export default function RequestsPage() {
                                 fontSize: 'var(--text-xs)', cursor: 'pointer',
                               }}
                             >
-                              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                              {GUIDE_REQUEST_STATUS_VALUES.map(s => (
+                                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                              ))}
                             </select>
                           )}
                         </td>

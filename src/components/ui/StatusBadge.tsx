@@ -1,11 +1,5 @@
 import type { FacilityStatus } from '@/types'
-
-const labels: Record<FacilityStatus, string> = {
-  open:        'Open',
-  closed:      'Closed',
-  crowded:     'Crowded',
-  maintenance: 'Under Maintenance',
-}
+import { FACILITY_STATUS_LABELS } from '@/lib/constants'
 
 export default function StatusBadge({ status }: { status: FacilityStatus }) {
   return (
@@ -35,7 +29,7 @@ export default function StatusBadge({ status }: { status: FacilityStatus }) {
           flexShrink: 0,
         }}
       />
-      {labels[status]}
+      {FACILITY_STATUS_LABELS[status]}
     </span>
   )
 }

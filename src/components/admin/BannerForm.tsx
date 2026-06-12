@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { X, Upload, Loader2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import { adminInputStyle, adminLabelStyle } from '@/lib/styles'
 
 interface BannerFormProps {
   initial?: {
@@ -78,20 +79,6 @@ export default function BannerForm({ initial, onSuccess, onCancel }: BannerFormP
     }
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', height: 44, padding: '0 12px', borderRadius: 8,
-    border: '1px solid var(--color-border-default)',
-    background: 'var(--color-bg-surface)',
-    color: 'var(--color-text-primary)',
-    fontSize: 'var(--text-sm)', outline: 'none', boxSizing: 'border-box',
-  }
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 'var(--text-sm)',
-    fontWeight: 'var(--font-weight-semibold)',
-    color: 'var(--color-text-primary)', marginBottom: 6,
-  }
-
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 60,
@@ -118,17 +105,17 @@ export default function BannerForm({ initial, onSuccess, onCancel }: BannerFormP
 
         <form onSubmit={handleSubmit} style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <label style={labelStyle}>Title *</label>
-            <input style={inputStyle} value={title} onChange={e => setTitle(e.target.value)} required maxLength={200} placeholder="Banner headline" />
+            <label style={adminLabelStyle}>Title *</label>
+            <input style={adminInputStyle} value={title} onChange={e => setTitle(e.target.value)} required maxLength={200} placeholder="Banner headline" />
           </div>
 
           <div>
-            <label style={labelStyle}>Subtitle</label>
-            <input style={inputStyle} value={subtitle} onChange={e => setSubtitle(e.target.value)} maxLength={400} placeholder="Optional supporting text" />
+            <label style={adminLabelStyle}>Subtitle</label>
+            <input style={adminInputStyle} value={subtitle} onChange={e => setSubtitle(e.target.value)} maxLength={400} placeholder="Optional supporting text" />
           </div>
 
           <div>
-            <label style={labelStyle}>Image</label>
+            <label style={adminLabelStyle}>Image</label>
             {imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={imageUrl} alt="" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 10, marginBottom: 8, border: '1px solid var(--color-border-subtle)' }} />
@@ -140,8 +127,8 @@ export default function BannerForm({ initial, onSuccess, onCancel }: BannerFormP
           </div>
 
           <div>
-            <label style={labelStyle}>Link URL</label>
-            <input style={inputStyle} type="url" value={linkUrl} onChange={e => setLinkUrl(e.target.value)} placeholder="https://... (optional)" />
+            <label style={adminLabelStyle}>Link URL</label>
+            <input style={adminInputStyle} type="url" value={linkUrl} onChange={e => setLinkUrl(e.target.value)} placeholder="https://... (optional)" />
           </div>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>

@@ -7,8 +7,7 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import Spinner from '@/components/ui/Spinner'
 import { useFacilityContext } from '@/providers/FacilityProvider'
 import type { FacilityCategory, Facility } from '@/types'
-
-const CATEGORIES: FacilityCategory[] = ['toilet', 'auditorium', 'food', 'medical', 'parking', 'shuttle', 'hotel', 'accommodation']
+import { FACILITY_CATEGORY_VALUES } from '@/lib/constants'
 
 interface CategoryGridProps {
   counts: Record<string, number>
@@ -34,7 +33,7 @@ export default function CategoryGrid({ counts }: CategoryGridProps) {
   return (
     <>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-        {CATEGORIES.map(cat => (
+        {FACILITY_CATEGORY_VALUES.map(cat => (
           <button
             key={cat}
             onClick={() => openCategory(cat)}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase'
 import Button from '@/components/ui/Button'
+import { loginInputStyle, adminLabelStyle } from '@/lib/styles'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -26,15 +27,6 @@ export default function AdminLoginPage() {
     }
     router.push('/admin')
     router.refresh()
-  }
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%', height: 48, padding: '0 14px', borderRadius: 10,
-    border: '1px solid var(--color-border-default)',
-    background: 'var(--color-bg-base)',
-    color: 'var(--color-text-primary)',
-    fontSize: 'var(--text-base)', outline: 'none', boxSizing: 'border-box',
-    transition: 'border-color 150ms',
   }
 
   return (
@@ -73,15 +65,11 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <label style={{
-              display: 'block', fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-weight-semibold)',
-              color: 'var(--color-text-primary)', marginBottom: 6,
-            }}>
+            <label style={adminLabelStyle}>
               Email
             </label>
             <input
-              style={inputStyle}
+              style={loginInputStyle}
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -92,15 +80,11 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label style={{
-              display: 'block', fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-weight-semibold)',
-              color: 'var(--color-text-primary)', marginBottom: 6,
-            }}>
+            <label style={adminLabelStyle}>
               Password
             </label>
             <input
-              style={inputStyle}
+              style={loginInputStyle}
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}

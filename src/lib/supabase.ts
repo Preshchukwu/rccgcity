@@ -5,7 +5,7 @@
 //  Route Handler     → createSupabaseServerClient(cookieStore)
 //  Middleware        → see src/middleware.ts for the inline pattern
 
-import { createBrowserClient, createServerClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient, createServerClient } from '@supabase/ssr'
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
