@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MessageCircle } from 'lucide-react'
 import { timeAgo } from '@/lib/format'
@@ -10,7 +13,26 @@ interface ReportPreview {
   facility: { name: string }
 }
 
-export default function RecentReports({ reports }: { reports: ReportPreview[] }) {
+export default function RecentReports({ reports: initialReports }: { reports: ReportPreview[] }) {
+  const [reports, setReports] = useState(initialReports)
+
+  useEffect(() => {
+    async function refresh() {
+      try {
+        const res = await fetch('/api/reports?type=comment&limit=5')
+        if (res.ok) {
+          const data: ReportPreview[] = await res.json()
+          setReports(data)
+        }
+      } catch {
+        // keep existing data on error
+      }
+    }
+
+    window.addEventListener('report-submitted', refresh)
+    return () => window.removeEventListener('report-submitted', refresh)
+  }, [])
+
   if (!reports.length) return null
 
   return (

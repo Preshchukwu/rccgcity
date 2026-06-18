@@ -6,8 +6,10 @@ import Drawer from '@/components/ui/Drawer'
 import StatusBadge from '@/components/ui/StatusBadge'
 import Spinner from '@/components/ui/Spinner'
 import { useFacilityContext } from '@/providers/FacilityProvider'
+import { useTranslation } from '@/providers/TranslationProvider'
 import type { FacilityCategory, Facility } from '@/types'
 import { FACILITY_CATEGORY_VALUES } from '@/lib/constants'
+import type { UiStringKey } from '@/lib/ui-strings'
 
 interface CategoryGridProps {
   counts: Record<string, number>
@@ -18,6 +20,11 @@ export default function CategoryGrid({ counts }: CategoryGridProps) {
   const [categoryFacilities, setCategoryFacilities] = useState<Facility[]>([])
   const [loading, setLoading] = useState(false)
   const { openFacility } = useFacilityContext()
+  const { t } = useTranslation()
+
+  function catLabel(cat: FacilityCategory): string {
+    return t(`cat_${cat}` as UiStringKey)
+  }
 
   async function openCategory(cat: FacilityCategory) {
     setActiveCategory(cat)
@@ -60,7 +67,7 @@ export default function CategoryGrid({ counts }: CategoryGridProps) {
               textAlign: 'center',
               lineHeight: 'var(--leading-tight)',
             }}>
-              {getCategoryLabel(cat)}
+              {catLabel(cat)}
             </span>
             {counts[cat] > 0 && (
               <span style={{

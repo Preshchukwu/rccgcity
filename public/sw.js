@@ -87,9 +87,13 @@ async function networkFirst(request) {
     if (response.ok) {
       const cache = await caches.open(CACHE)
       cache.put(request, response.clone())
+      return response
     }
-    return response
+    // Server returned an error — serve stale cache if available
+    const cached = await caches.match(request)
+    return cached ?? response
   } catch {
+    // Network unreachable — fall back to cache
     const cached = await caches.match(request)
     return cached ?? new Response('You are offline', { status: 503, headers: { 'Content-Type': 'text/plain' } })
   }

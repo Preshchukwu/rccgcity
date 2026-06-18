@@ -118,7 +118,6 @@
   --color-text-primary:   var(--neutral-950); /* Body text, headings             */
   --color-text-secondary: var(--neutral-600); /* Captions, metadata, subtext     */
   --color-text-tertiary:  var(--neutral-400); /* Placeholder, hints              */
-  --color-text-disabled:  var(--neutral-300); /* Disabled field values           */
   --color-text-inverse:   var(--white);       /* Text on dark/inverse surfaces   */
   --color-text-on-brand:  var(--white);       /* Text on brand-colored fills     */
 
@@ -196,9 +195,6 @@
   --text-lg:   1.125rem;   /* 18px — lead text, facility names in lists   */
   --text-xl:   1.25rem;    /* 20px — section headings, drawer titles      */
   --text-2xl:  1.5rem;     /* 24px — screen titles, category headings     */
-  --text-3xl:  1.875rem;   /* 30px — large feature headings               */
-  --text-4xl:  2.25rem;    /* 36px — hero / banner headings               */
-  --text-5xl:  3rem;       /* 48px — display text (use sparingly)         */
 
   /* ---- Font Weights ---- */
   --font-weight-regular:  400; /* Body text, descriptions, input values   */
@@ -212,15 +208,12 @@
   --leading-snug:    1.375;  /* Large body text, lead paragraphs          */
   --leading-normal:  1.5;    /* Standard body text (default)              */
   --leading-relaxed: 1.625;  /* Long descriptions, help content           */
-  --leading-loose:   2;      /* Instructional / spaced text               */
 
   /* ---- Letter Spacing ---- */
-  --tracking-tighter: -0.05em;  /* Large display headings                 */
   --tracking-tight:   -0.025em; /* h1–h2 headings                         */
   --tracking-normal:   0em;     /* Default body text                      */
   --tracking-wide:     0.025em; /* UI labels, form labels                 */
   --tracking-wider:    0.05em;  /* Status badges, category chips          */
-  --tracking-widest:   0.1em;   /* ALL CAPS labels, overline text         */
 
 }
 
@@ -265,7 +258,6 @@
     --color-text-primary:   var(--neutral-50);
     --color-text-secondary: var(--neutral-300);
     --color-text-tertiary:  var(--neutral-500);
-    --color-text-disabled:  var(--neutral-600);
     --color-text-inverse:   var(--neutral-950);
     --color-text-on-brand:  var(--white);
 

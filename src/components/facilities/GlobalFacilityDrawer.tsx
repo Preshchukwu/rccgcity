@@ -65,6 +65,7 @@ export default function GlobalFacilityDrawer() {
   const handleReportSuccess = useCallback((newReport: Record<string, unknown>) => {
     setReports(prev => [newReport as unknown as ReportWithFacility, ...prev])
     setShowForm(false)
+    window.dispatchEvent(new Event('report-submitted'))
   }, [])
 
   function openMaps() {

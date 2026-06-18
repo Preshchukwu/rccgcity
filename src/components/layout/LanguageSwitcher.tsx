@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Globe, ChevronDown, Check } from 'lucide-react'
+import { Globe, ChevronDown, Check, Loader2 } from 'lucide-react'
 import { SUPPORTED_LANGUAGES } from '@/lib/constants'
+import { useTranslation } from '@/providers/TranslationProvider'
 
 interface Props {
   size?: 'sm' | 'md'
@@ -10,8 +11,8 @@ interface Props {
 
 export default function LanguageSwitcher({ size = 'md' }: Props) {
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState('en')
   const ref = useRef<HTMLDivElement>(null)
+  const { language, setLanguage, loading } = useTranslation()
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -26,12 +27,13 @@ export default function LanguageSwitcher({ size = 'md' }: Props) {
   const btnSize = size === 'sm' ? 32 : 36
   const iconSize = size === 'sm' ? 15 : 16
 
-  const selectedLabel = SUPPORTED_LANGUAGES.find(l => l.code === selected)?.code.toUpperCase() ?? 'EN'
+  const selectedLabel = SUPPORTED_LANGUAGES.find(l => l.code === language)?.code.toUpperCase() ?? 'EN'
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setOpen(v => !v)}
+        disabled={loading}
         aria-label="Select language"
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -45,12 +47,15 @@ export default function LanguageSwitcher({ size = 'md' }: Props) {
           background: open ? 'var(--color-brand-subtle)' : 'var(--color-bg-subtle)',
           border: `1px solid ${open ? 'var(--color-brand)' : 'var(--color-border-default)'}`,
           color: open ? 'var(--color-brand)' : 'var(--color-text-secondary)',
-          cursor: 'pointer',
+          cursor: loading ? 'default' : 'pointer',
           transition: 'background 150ms, border-color 150ms, color 150ms',
           flexShrink: 0,
         }}
       >
-        <Globe size={iconSize} />
+        {loading
+          ? <Loader2 size={iconSize} style={{ animation: 'spin 0.8s linear infinite' }} />
+          : <Globe size={iconSize} />
+        }
         <span style={{
           fontSize: 'var(--text-xs)',
           fontWeight: 'var(--font-weight-semibold)',
@@ -59,13 +64,15 @@ export default function LanguageSwitcher({ size = 'md' }: Props) {
         }}>
           {selectedLabel}
         </span>
-        <ChevronDown
-          size={12}
-          style={{
-            transition: 'transform 150ms',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}
-        />
+        {!loading && (
+          <ChevronDown
+            size={12}
+            style={{
+              transition: 'transform 150ms',
+              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          />
+        )}
       </button>
 
       {open && (
@@ -91,9 +98,9 @@ export default function LanguageSwitcher({ size = 'md' }: Props) {
             <li
               key={lang.code}
               role="option"
-              aria-selected={selected === lang.code}
+              aria-selected={language === lang.code}
               onClick={() => {
-                setSelected(lang.code)
+                setLanguage(lang.code)
                 setOpen(false)
               }}
               style={{
@@ -102,29 +109,29 @@ export default function LanguageSwitcher({ size = 'md' }: Props) {
                 justifyContent: 'space-between',
                 padding: '9px 14px',
                 fontSize: 'var(--text-sm)',
-                fontWeight: selected === lang.code
+                fontWeight: language === lang.code
                   ? 'var(--font-weight-semibold)'
                   : 'var(--font-weight-medium)',
-                color: selected === lang.code
+                color: language === lang.code
                   ? 'var(--color-brand)'
                   : 'var(--color-text-primary)',
-                background: selected === lang.code
+                background: language === lang.code
                   ? 'var(--color-brand-subtle)'
                   : 'transparent',
                 cursor: 'pointer',
                 transition: 'background 100ms',
               }}
               onMouseEnter={e => {
-                if (selected !== lang.code)
+                if (language !== lang.code)
                   (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-subtle)'
               }}
               onMouseLeave={e => {
-                if (selected !== lang.code)
+                if (language !== lang.code)
                   (e.currentTarget as HTMLElement).style.background = 'transparent'
               }}
             >
               {lang.label}
-              {selected === lang.code && <Check size={13} />}
+              {language === lang.code && <Check size={13} />}
             </li>
           ))}
         </ul>

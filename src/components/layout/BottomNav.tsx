@@ -3,16 +3,18 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Map, Search, LifeBuoy } from 'lucide-react'
-
-const tabs = [
-  { href: '/',       label: 'Home',   icon: Home    },
-  { href: '/map',    label: 'Map',    icon: Map     },
-  { href: '/search', label: 'Search', icon: Search  },
-  { href: '/help',   label: 'Help',   icon: LifeBuoy },
-]
+import { useTranslation } from '@/providers/TranslationProvider'
 
 export default function BottomNav() {
   const pathname = usePathname()
+  const { t } = useTranslation()
+
+  const tabs = [
+    { href: '/',       label: t('nav_home'),   icon: Home    },
+    { href: '/map',    label: t('nav_map'),    icon: Map     },
+    { href: '/search', label: t('nav_search'), icon: Search  },
+    { href: '/help',   label: t('nav_help'),   icon: LifeBuoy },
+  ]
 
   return (
     <nav

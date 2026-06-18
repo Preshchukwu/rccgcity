@@ -2,15 +2,18 @@
 
 import Link from 'next/link'
 import { Map, Search, LifeBuoy, UserCheck } from 'lucide-react'
-
-const actions = [
-  { href: '/map',    label: 'Navigate',     icon: Map       },
-  { href: '/search', label: 'Find Facility', icon: Search    },
-  { href: '/help',   label: 'Help',          icon: LifeBuoy  },
-  { href: '/guide',  label: 'Get a Guide',   icon: UserCheck },
-]
+import { useTranslation } from '@/providers/TranslationProvider'
 
 export default function QuickActions() {
+  const { t } = useTranslation()
+
+  const actions = [
+    { href: '/map',    labelKey: 'action_navigate'     as const, icon: Map       },
+    { href: '/search', labelKey: 'action_find_facility' as const, icon: Search    },
+    { href: '/help',   labelKey: 'action_help'          as const, icon: LifeBuoy  },
+    { href: '/guide',  labelKey: 'action_get_guide'     as const, icon: UserCheck },
+  ]
+
   return (
     <div style={{
       display: 'flex',
@@ -20,7 +23,7 @@ export default function QuickActions() {
       boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
       overflow: 'hidden',
     }}>
-      {actions.map(({ href, label, icon: Icon }, i) => (
+      {actions.map(({ href, labelKey, icon: Icon }, i) => (
         <Link
           key={href}
           href={href}
@@ -59,7 +62,7 @@ export default function QuickActions() {
             whiteSpace: 'nowrap',
             lineHeight: 'var(--leading-tight)',
           }}>
-            {label}
+            {t(labelKey)}
           </span>
         </Link>
       ))}

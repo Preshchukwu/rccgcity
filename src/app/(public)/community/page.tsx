@@ -54,6 +54,15 @@ export default function CommunityPage() {
     fetchReports(0, typeFilter, false).finally(() => setLoading(false))
   }, [typeFilter, fetchReports])
 
+  useEffect(() => {
+    function onReportSubmitted() {
+      setOffset(0)
+      fetchReports(0, typeFilter, false)
+    }
+    window.addEventListener('report-submitted', onReportSubmitted)
+    return () => window.removeEventListener('report-submitted', onReportSubmitted)
+  }, [typeFilter, fetchReports])
+
   async function loadMore() {
     setLoadingMore(true)
     await fetchReports(offset, typeFilter, true)

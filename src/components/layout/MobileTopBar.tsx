@@ -3,17 +3,20 @@
 import { useMemo } from 'react'
 import DarkModeToggle from './DarkModeToggle'
 import LanguageSwitcher from './LanguageSwitcher'
+import { useTranslation } from '@/providers/TranslationProvider'
+import type { UiStringKey } from '@/lib/ui-strings'
 
-function getGreeting(): { line1: string; line2: string } {
+function getGreetingKey(): { line1: UiStringKey; line2: UiStringKey } {
   const hour = new Date().getHours()
-  if (hour >= 5 && hour < 12) return { line1: 'Good Morning', line2: 'Calvary Greetings!' }
-  if (hour >= 12 && hour < 17) return { line1: 'Good Afternoon', line2: 'Calvary Greetings!' }
-  if (hour >= 17 && hour < 21) return { line1: 'Good Evening', line2: 'Calvary Greetings!' }
-  return { line1: 'Welcome', line2: 'Calvary Greetings!' }
+  if (hour >= 5 && hour < 12) return { line1: 'greeting_morning',   line2: 'greeting_tagline' }
+  if (hour >= 12 && hour < 17) return { line1: 'greeting_afternoon', line2: 'greeting_tagline' }
+  if (hour >= 17 && hour < 21) return { line1: 'greeting_evening',   line2: 'greeting_tagline' }
+  return { line1: 'greeting_welcome', line2: 'greeting_tagline' }
 }
 
 export default function MobileTopBar() {
-  const greeting = useMemo(() => getGreeting(), [])
+  const greetingKeys = useMemo(() => getGreetingKey(), [])
+  const { t } = useTranslation()
 
   return (
     <div
@@ -32,7 +35,6 @@ export default function MobileTopBar() {
         zIndex: 50,
       }}
     >
-      {/* Greeting */}
       <div>
         <p style={{
           fontSize: 'var(--text-base)',
@@ -41,7 +43,7 @@ export default function MobileTopBar() {
           margin: 0,
           lineHeight: 1.2,
         }}>
-          {greeting.line1}
+          {t(greetingKeys.line1)}
         </p>
         <p style={{
           fontSize: 'var(--text-xs)',
@@ -49,11 +51,10 @@ export default function MobileTopBar() {
           margin: 0,
           lineHeight: 1.3,
         }}>
-          {greeting.line2}
+          {t(greetingKeys.line2)}
         </p>
       </div>
 
-      {/* Toggles */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <LanguageSwitcher size="sm" />
         <DarkModeToggle size="sm" />

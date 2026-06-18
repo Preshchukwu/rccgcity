@@ -31,3 +31,7 @@ body {
 :focus:not(:focus-visible) {
   outline: none;
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

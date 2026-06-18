@@ -66,8 +66,8 @@ Admin-only. No public registration. Create admin users manually in the Supabase 
 ## Mobile Layout
 
 `PageShell` renders a **two-bar mobile layout**:
-- `MobileTopBar` — fixed top bar (56px, `--nav-height-mobile-top`). Left: time-aware greeting + "Calvary Greetings!". Right: dark mode toggle + language toggle (disabled). Mobile only (`block lg:hidden`).
-- `BottomNav` — fixed bottom bar (64px, `--nav-height-mobile`). Mobile only.
+- `MobileTopBar` — fixed top bar (56px, `--nav-height-mobile-top`). Left: time-aware greeting + "Calvary Greetings!" (translated). Right: `LanguageSwitcher` + `DarkModeToggle`. Mobile only (`block lg:hidden`).
+- `BottomNav` — fixed bottom bar (64px, `--nav-height-mobile`). Mobile only. Labels are translated.
 - `main` gets `padding-top: var(--nav-height-mobile-top)` on mobile, `padding-top: var(--nav-height-desktop)` on desktop.
 
 Desktop keeps the existing `TopHeader` only — no `MobileTopBar`.
@@ -149,6 +149,27 @@ The cloudinary SDK uses Node.js `fs` and must never be bundled for the browser. 
 - **`src/lib/cloudinary-url.ts`** — `extractPublicId`, `getTransformedUrl`. Browser-safe, no SDK import. Import this in any client component.
 - **`src/lib/cloudinary.ts`** — `uploadImage`, `deleteImage`, and SDK config. Server-only. Import only in API routes.
 
+## Multilingual Translation
+
+Full translation pipeline is live. Supports EN / Yoruba / Igbo / Hausa / French.
+
+**Architecture:**
+- `src/lib/ui-strings.ts` — master English dictionary (`UI_STRINGS`). All translatable keys live here. Add new keys here first.
+- `src/providers/TranslationProvider.tsx` — React context wrapping the whole app (added to `layout.tsx`). On language change, calls `POST /api/translate` with the full `UI_STRINGS` dictionary. Result cached in `localStorage` keyed by language (`rccg_trans_<lang>`), so DeepSeek is only called once per language ever. Selected language persisted in `localStorage` as `rccg_lang`.
+- `src/lib/deepseek.ts` — DeepSeek API client. Requires `DEEPSEEK_API_KEY` in env (set in both `.env.local` and Vercel project settings).
+- `useTranslation()` hook — import from `@/providers/TranslationProvider`. Exposes `{ t, language, setLanguage, loading }`.
+
+**Usage in components:**
+```ts
+import { useTranslation } from '@/providers/TranslationProvider'
+const { t } = useTranslation()
+// t('nav_home') → 'Home' (EN) or translated string
+```
+
+**Currently translated:** bottom nav labels, quick action labels, time-aware greeting, all 8 facility category names.
+
+**To add a new translatable string:** add it to `UI_STRINGS` in `src/lib/ui-strings.ts`, then use `t('your_key')` in the component. The key will be translated automatically on next language switch (cache will be stale for existing users — acceptable for new strings).
+
 ## Shared Utilities
 
 | File | What it contains |
@@ -159,15 +180,16 @@ The cloudinary SDK uses Node.js `fs` and must never be bundled for the browser. 
 | `src/lib/debounce.ts` | Generic debounce utility |
 | `src/lib/format.ts` | `timeAgo`, `formatDateTime` |
 | `src/lib/cloudinary-url.ts` | Browser-safe Cloudinary URL helpers |
+| `src/lib/ui-strings.ts` | Master English UI string dictionary for multilingual translation |
 
 Always import from these files — do not re-declare inline.
 
 ## Pending Work
 
 - [x] Migrate `@supabase/auth-helpers-nextjs` → `@supabase/ssr` (package deprecated)
-- [ ] Wire up Globe button language switcher (entry points exist in `MobileTopBar`, `TopHeader`)
+- [x] Wire up Globe button language switcher — `TranslationProvider` + DeepSeek live
 - [x] Testing pyramid — Vitest (unit + integration) + Playwright (E2E)
 - [x] DRY pass — all enums, labels, styles, utilities centralised
 - [ ] Upstash Redis rate limiting (currently stubbed to `{ success: true }`)
 - [ ] Google Maps integration (backlog — pending RCCG map data)
-- [ ] Multilingual support via DeepSeek (backlog — after RCCG testing phase)
+- [x] Multilingual support via DeepSeek — live (EN/YO/IG/HA/FR)
